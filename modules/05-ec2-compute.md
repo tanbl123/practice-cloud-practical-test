@@ -1,4 +1,4 @@
-# Module 4 — Adding a Compute Layer (Amazon EC2)
+# Module 5 — Adding a Compute Layer Using Amazon EC2
 
 **Status:** not started | **Confidence:** –
 

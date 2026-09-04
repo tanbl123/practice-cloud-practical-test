@@ -8,30 +8,35 @@
 
 ## Next step
 > **Phase 1 — work through Modules 1-10 (teaching/guiding only, no questions yet).**
-> Start with **Module 6 (VPC)**: it underpins Modules 7, 9 and 10, and is the
-> most common place to lose marks. Practice questions come later, in Phase 2,
-> only when the user asks for them.
+> Module 8 (Connecting Networks) is done. Next best: **Module 7 (Creating a
+> Networking Environment)** — the VPC that Module 8 peers together, and the
+> foundation for Modules 5, 9 and 10. Practice questions come later, in Phase 2,
+> only when the user asks.
 
 ---
 
 ## Status by module
 
-Legend: `not started` · `reading` · `lab done` · `drilled` · `confident`
+Legend: `not started` · `reading` · `lab done` · `covered` · `confident`
 
-| # | Module | Status | Confidence (1-5) | Notes |
-|---|--------|--------|------------------|-------|
-| 1 | Welcome / course intro | not started | – | |
+| # | Module (Canvas title) | Status | Confidence (1-5) | Notes |
+|---|-----------------------|--------|------------------|-------|
+| 1 | Welcome to AWS Academy Cloud Architecting | not started | – | |
 | 2 | Introducing Cloud Architecting | not started | – | |
-| 3 | Adding a Storage Layer (S3) | not started | – | |
-| 4 | Adding a Compute Layer (EC2) | not started | – | |
-| 5 | Adding a Database Layer (RDS) | not started | – | |
-| 6 | Creating a Networking Environment (VPC) | not started | – | |
-| 7 | Connecting Networks | not started | – | |
-| 8 | Securing User and Application Access (IAM) | not started | – | |
-| 9 | Elasticity, HA and Monitoring | not started | – | |
-| 10 | Automating Your Architecture (CloudFormation) | not started | – | |
+| 3 | Securing Access | not started | – | IAM foundations |
+| 4 | Adding a Storage Layer with Amazon S3 | not started | – | |
+| 5 | Adding a Compute Layer Using Amazon EC2 | not started | – | |
+| 6 | Adding a Database Layer | not started | – | |
+| 7 | Creating a Networking Environment | not started | – | |
+| 8 | Connecting Networks | **lab done** | – | VPC peering guided lab walked through 2026-09-04 |
+| 9 | Securing User, Application, and Data Access | not started | – | |
+| 10 | Implementing Monitoring, Elasticity, and High Availability | not started | – | |
 
-**Known from Canvas:** Knowledge Checks for Modules 7, 8 and 9 scored 100/100.
+**Out of scope (Modules 11-17 + Capstone):** see `notes/beyond-module-10.md`.
+Notably **CloudFormation (Mod 11)** and **DR / RTO / RPO (Mod 16)** are NOT tested.
+
+**Known from Canvas:** Knowledge Checks for three modules scored 100/100
+(seen on the course home page; these are multiple-choice recall, not build skill).
 
 ---
 
@@ -54,4 +59,10 @@ _(nothing recorded yet — populated as we drill)_
 - Agreed help on later modules (11, 12, ...) is in scope for coursework, but
   tracked separately in `notes/beyond-module-10.md`.
 - Moved the record to `main` at the user's request.
-- No modules covered yet.
+- **Confirmed the real course structure from Canvas: 17 modules, not the
+  standard layout previously assumed.** Renumbered every file in `modules/`.
+  Key corrections: Module 3 is *Securing Access* (IAM foundations, previously
+  missing entirely); S3/EC2/DB/VPC all shifted one number later; **CloudFormation
+  is Module 11 and NOT in the test**; **DR/RTO/RPO is Module 16 and NOT in the test**.
+- Walked through the **Module 8 guided lab: Creating a VPC Peering Connection**
+  (peering handshake, routes on both sides, VPC Flow Logs, troubleshooting order).

@@ -1,4 +1,4 @@
-# Module 3 — Adding a Storage Layer (Amazon S3)
+# Module 4 — Adding a Storage Layer with Amazon S3
 
 **Status:** not started | **Confidence:** –
 

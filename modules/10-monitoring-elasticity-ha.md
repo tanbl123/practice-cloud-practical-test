@@ -1,4 +1,4 @@
-# Module 9 — Implementing Elasticity, High Availability and Monitoring
+# Module 10 — Implementing Monitoring, Elasticity, and High Availability
 
 **Status:** not started | **Confidence:** – (Knowledge Check: 100/100)
 **PRIORITY MODULE — the ALB + ASG build is a classic practical task.**
@@ -34,9 +34,10 @@ Load balancing, automatic scaling, monitoring, and disaster recovery planning.
 - **SNS:** notification topic, subscriptions — how an alarm reaches a human.
 - **Route 53 routing policies:** simple, weighted, latency, failover,
   geolocation, multivalue — plus health checks for DNS-level failover.
-- **DR strategies (increasing cost, decreasing RTO/RPO):** backup & restore →
-  pilot light → warm standby → multi-site active/active.
-  **RTO** = how long to recover. **RPO** = how much data you can afford to lose.
+- **DR strategies** (backup & restore → pilot light → warm standby →
+  multi-site), **RTO** and **RPO**: these belong to **Module 16, Planning for
+  Disaster — outside the test scope**. Know the vocabulary in case it is
+  referenced, but do not spend revision time here.
 
 ## Typical AWS Academy lab
 Building a **highly available web application**: launch template, Auto Scaling
@@ -60,7 +61,6 @@ health checks, a CloudWatch alarm, then load-testing to watch it scale out.
 1. Draw/describe request flow: user → ? → ? → ? → EC2.
 2. Targets show "unhealthy" but the app works when you hit the instance IP directly. Why?
 3. Target tracking vs scheduled scaling — one scenario for each.
-4. Define RTO and RPO, and place the four DR strategies on that scale.
 5. Which two security group rules make an ALB + EC2 tier work correctly?
 
 ## My notes

@@ -1,7 +1,7 @@
-# Module 6 — Creating a Networking Environment (VPC)
+# Module 7 — Creating a Networking Environment (VPC)
 
 **Status:** not started | **Confidence:** –
-**PRIORITY MODULE — underpins Modules 7, 9 and 10.**
+**PRIORITY MODULE — underpins Modules 8 and 10.**
 
 ## Scope
 Building an isolated network: subnets, routing, gateways, and network security.

@@ -45,7 +45,14 @@ Work on and push to **`main`** (the user granted this explicitly on
 2026-09-04). The branch `claude/cloud-computing-practice-8s3q0y` was the
 original working branch and is kept in sync, but `main` is the source of truth.
 
-## Accuracy note
-Module scope below is written from the standard ACAv3 syllabus. Exact lab
-titles and the lecturer's emphasis should be corrected in these files as the
-user confirms them.
+## Module numbering — CONFIRMED, do not re-derive
+The real course has **17 modules + Capstone**, confirmed from Canvas on
+2026-09-04 and recorded in `modules/00-overview.md`. It is NOT the standard
+ACAv3 layout. In particular: **Module 3 = Securing Access**, **Module 7 = VPC**,
+**Module 8 = Connecting Networks**, **Module 9 = Securing User, Application and
+Data Access**, **Module 10 = Monitoring, Elasticity and HA**.
+**CloudFormation is Module 11 and DR/RTO/RPO is Module 16 — both OUT of the
+test scope.** Trust `modules/00-overview.md` over any general knowledge of ACAv3.
+
+Exact lab titles and the lecturer's emphasis should still be corrected in these
+files as the user confirms them.

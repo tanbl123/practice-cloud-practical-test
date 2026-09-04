@@ -1,4 +1,9 @@
-# Module 10 — Automating Your Architecture (CloudFormation)
+# Module 11 — Automating Your Architecture (CloudFormation)
+
+> ## ⚠️ NOT IN THE PRACTICAL TEST
+> Confirmed 2026-09-04: the test covers Modules 1-10, and CloudFormation is
+> **Module 11**. Kept here for coursework reference only — do not spend
+> revision time on it for the practical.
 
 **Status:** not started | **Confidence:** –
 

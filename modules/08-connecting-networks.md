@@ -1,4 +1,4 @@
-# Module 7 — Connecting Networks
+# Module 8 — Connecting Networks
 
 **Status:** not started | **Confidence:** – (Knowledge Check: 100/100)
 
@@ -45,20 +45,9 @@ _(fill in as we go)_
 
 ---
 
-# ⚠️ NUMBERING CORRECTION (2026-09-04)
+# Confirmed lab: Creating a VPC Peering Connection
 
-The user confirmed that the **"Creating a VPC Peering Connection" guided lab
-sits under their course's Module 8**, not Module 7 as assumed in these notes.
-
-**This means the module numbering in this repo may be off by one from Module 6
-onward, and that matters:** if Connecting Networks is Module 8, then HA/
-Elasticity may be Module 9 or 10, and **CloudFormation may fall outside the
-Modules 1-10 test scope entirely**. Confirm the real module list from Canvas
-before relying on the numbering in `modules/00-overview.md`.
-
----
-
-# Confirmed lab: Creating a VPC Peering Connection (course Module 8)
+*(Course numbering confirmed 2026-09-04: this lab is Module 8.)*
 
 **Duration:** ~30 min. **Status:** guided through with Claude on 2026-09-04.
 

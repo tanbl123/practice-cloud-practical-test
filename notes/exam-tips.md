@@ -3,13 +3,13 @@
 Cross-module points that decide marks. Add to this as the lecturer drops hints.
 
 ## The five most common lost marks (my prediction, revise as we learn more)
-1. **Route table created but not associated** with the subnet (Module 6).
-2. **Bucket policy ARN missing `/*`** for object-level actions (Modules 3, 8).
+1. **Route table created but not associated** with the subnet (Module 7).
+2. **Bucket policy ARN missing `/*`** for object-level actions (Modules 4, 9).
 3. **Security group referencing a CIDR instead of another security group**
-   for tier-to-tier traffic (Modules 4, 9).
+   for tier-to-tier traffic (Modules 5, 10).
 4. **Only one AZ selected** for an ALB, ASG, or DB subnet group — kills the
-   "highly available" requirement (Modules 5, 9).
-5. **Health check path returns 404**, so ALB targets never go healthy (Module 9).
+   "highly available" requirement (Modules 6, 10).
+5. **Health check path returns 404**, so ALB targets never go healthy (Module 10).
 
 ## Answer-shaping habits
 - When a question says "highly available", your answer must contain
@@ -20,8 +20,9 @@ Cross-module points that decide marks. Add to this as the lecturer drops hints.
   **private subnet** and usually a **NAT gateway** for outbound updates.
 - When it says "temporary credentials" or "service needs access", the answer is
   an **IAM role**, never an access key.
-- When it says "decouple", think SQS/SNS; when it says "repeatable deployment",
-  think CloudFormation.
+- When it says "decouple" (SQS/SNS) or "repeatable deployment"
+  (CloudFormation), note that those are Modules 13 and 11 — **outside the
+  test scope**.
 
 ## Practical-test technique
 - Read every requirement and turn it into a checklist before touching the console.

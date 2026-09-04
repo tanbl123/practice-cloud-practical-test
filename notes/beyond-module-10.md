@@ -1,22 +1,29 @@
-# Help on Modules 11+ (not in the practical test)
+# Modules 11–17 — NOT in the practical test
 
-The practical test covers **Modules 1-10 only**. This file records help given on
-later modules for normal coursework, kept separate so it does not clutter test
-preparation.
+Confirmed from Canvas on 2026-09-04. The practical test covers **Modules 1–10**
+only. Help on these later modules is fine for coursework, but it is tracked here
+so it never gets confused with test preparation.
 
-For reference, the remaining ACAv3 modules typically cover:
+| # | Module (exact Canvas title) | Core services |
+|---|------------------------------|---------------|
+| 11 | Automating Your Architecture | **CloudFormation** (see `modules/11-automating-architecture-NOT-IN-TEST.md`) |
+| 12 | Caching Content | CloudFront, ElastiCache, edge caching |
+| 13 | Building Decoupled Architectures | SQS, SNS, EventBridge |
+| 14 | Building Serverless Architectures and Microservices | Lambda, API Gateway, DynamoDB |
+| 15 | Data Engineering Patterns | Kinesis, Glue, Athena, Redshift |
+| 16 | Planning for Disaster | **RTO/RPO, backup & restore, pilot light, warm standby, multi-site** |
+| 17 | Bridging to Certification | SAA-C03 exam preparation |
+| – | Capstone Project | End-to-end build |
 
-| # | Module | Core services |
-|---|--------|---------------|
-| 11 | Caching Content | CloudFront, ElastiCache, edge caching |
-| 12 | Building Decoupled Architectures | SQS, SNS, EventBridge |
-| 13 | Building Serverless Architectures | Lambda, API Gateway, DynamoDB, Step Functions |
-| 14 | Data Engineering Patterns | Kinesis, Glue, Athena, Redshift, data lakes |
-| 15 | Bridging to Certification / Capstone | Review and capstone project |
+## Two boundary warnings
+- **CloudFormation** feels like core architecting and appears in many AWS
+  practicals — but here it is **Module 11**, outside the test.
+- **Disaster recovery vocabulary (RTO, RPO, pilot light, warm standby)** is
+  **Module 16**, outside the test. High availability *within* a Region
+  (Multi-AZ, ALB, Auto Scaling) is Module 10 and **is** tested. Don't confuse
+  the two: HA is in, DR is out.
 
-_(Correct these against Canvas as the user reaches them.)_
-
-## Log of help given
+## Log of help given on out-of-scope modules
 | Date | Module | Topic | Notes |
 |------|--------|-------|-------|
 | _(none yet)_ | | | |

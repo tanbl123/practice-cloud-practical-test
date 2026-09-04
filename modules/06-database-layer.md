@@ -1,4 +1,4 @@
-# Module 5 — Adding a Database Layer
+# Module 6 — Adding a Database Layer
 
 **Status:** not started | **Confidence:** –
 
