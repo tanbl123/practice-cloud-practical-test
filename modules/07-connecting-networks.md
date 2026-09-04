@@ -42,3 +42,73 @@ Joining VPCs to each other and connecting AWS to on-premises networks.
 
 ## My notes
 _(fill in as we go)_
+
+---
+
+# ⚠️ NUMBERING CORRECTION (2026-09-04)
+
+The user confirmed that the **"Creating a VPC Peering Connection" guided lab
+sits under their course's Module 8**, not Module 7 as assumed in these notes.
+
+**This means the module numbering in this repo may be off by one from Module 6
+onward, and that matters:** if Connecting Networks is Module 8, then HA/
+Elasticity may be Module 9 or 10, and **CloudFormation may fall outside the
+Modules 1-10 test scope entirely**. Confirm the real module list from Canvas
+before relying on the numbering in `modules/00-overview.md`.
+
+---
+
+# Confirmed lab: Creating a VPC Peering Connection (course Module 8)
+
+**Duration:** ~30 min. **Status:** guided through with Claude on 2026-09-04.
+
+## Lab setup
+- **Lab VPC** `10.0.0.0/16` — inventory application on an EC2 instance in a
+  **public** subnet.
+- **Shared VPC** `10.5.0.0/16` — database instance in a **private** subnet,
+  **no internet gateway**.
+- CIDRs are deliberately non-overlapping, which is a hard requirement for peering.
+
+## Task flow and what each step actually proves
+1. **Create peering connection** `Lab-Peer` (Requester = Lab VPC,
+   Accepter = Shared VPC), then **Accept request**.
+   Status goes `Initiating request` → `Pending acceptance` → **`Active`**.
+2. **Routes on BOTH sides** — this is what makes peering function:
+   - Lab Public Route Table: `10.5.0.0/16` → `Lab-Peer` (pcx-)
+   - Shared VPC Route Table: `10.0.0.0/16` → `Lab-Peer` (pcx-)
+3. **Flow logs** on Shared VPC → CloudWatch Logs group `ShareVPCFlowLogs`,
+   1-minute aggregation, using IAM role `vpc-flow-logs-Role`.
+4. **Test:** configure the app's Settings with the DB endpoint,
+   database `inventory`, user `admin`, password `lab-password`.
+5. **Analyse** log stream `eni-*`, looking at **port 3306** entries.
+
+## The key insight of this lab
+Shared VPC **has no internet gateway**. So if the inventory app can read the
+database at all, traffic can only have crossed the peering connection. That is
+the proof, and it is the sentence to reproduce in an exam answer.
+
+## Gotchas surfaced by this lab
+- Peering does nothing until **both** route tables have a route. A one-sided
+  route means the request arrives but the reply cannot get home — you see a
+  **timeout**, not a connection refused.
+- The peering request must be **accepted**; a pending connection routes nothing.
+- The DB security group must allow **3306 from the Lab VPC CIDR**. Peering does
+  not bypass security groups or NACLs.
+- Flow logs need an **IAM role** whose trust policy allows
+  `vpc-flow-logs.amazonaws.com` — a direct Module 8 (IAM) tie-in.
+- Flow log entries take **several minutes** to appear. That is normal, not a fault.
+
+## VPC Flow Log record format (default fields, in order)
+```
+version account-id interface-id srcaddr dstaddr srcport dstport
+protocol packets bytes start end action log-status
+```
+- `protocol` **6 = TCP**, 17 = UDP, 1 = ICMP
+- `action` = **ACCEPT** or **REJECT** (REJECT = a security group or NACL blocked it)
+- `log-status` = OK / NODATA / SKIPDATA
+- Flow logs capture **metadata only**, never packet contents.
+
+## Traffic that flow logs do NOT capture
+Instance metadata (`169.254.169.254`), Amazon Time Sync (`169.254.169.123`),
+DHCP traffic, traffic to the Amazon-provided DNS server, traffic to the reserved
+VPC router address, and traffic between an ENI and a Network Load Balancer ENI.
