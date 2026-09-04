@@ -7,8 +7,10 @@
 ---
 
 ## Next step
-> Choose a module to start drilling. Recommended: **Module 6 (VPC)** — it
-> underpins Modules 7, 9 and 10, and is the most common place to lose marks.
+> **Phase 1 — work through Modules 1-10 (teaching/guiding only, no questions yet).**
+> Start with **Module 6 (VPC)**: it underpins Modules 7, 9 and 10, and is the
+> most common place to lose marks. Practice questions come later, in Phase 2,
+> only when the user asks for them.
 
 ---
 
@@ -46,4 +48,10 @@ _(nothing recorded yet — populated as we drill)_
 - Built an optional offline AWS CLI sandbox (moto) for rehearsing commands
   without consuming AWS Academy lab time.
 - Wrote coverage notes for all ten modules in `modules/`.
-- No drilling done yet.
+- Agreed the working method: **Phase 1** = cover Modules 1-10 with guidance and
+  explanation, **no practice questions**. **Phase 2** = practice questions,
+  started only when the user asks.
+- Agreed help on later modules (11, 12, ...) is in scope for coursework, but
+  tracked separately in `notes/beyond-module-10.md`.
+- Moved the record to `main` at the user's request.
+- No modules covered yet.

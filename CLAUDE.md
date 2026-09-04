@@ -19,11 +19,31 @@ between sessions, so this repo is the only memory of what we have already done.
    `modules/*.md` file.
 5. Commit and push to `claude/cloud-computing-practice-8s3q0y`.
 
-## How the user wants to work
-- They do the AWS Academy labs themselves; Claude guides, explains and drills.
+## How the user wants to work (agreed 2026-09-04)
+- They do the AWS Academy labs themselves; Claude guides and explains.
 - Do not build replacement labs unless asked.
 - An offline AWS CLI sandbox exists (see README) for rehearsing commands
   without spending AWS Academy lab hours.
+
+### Phase order — IMPORTANT
+1. **Phase 1 (current): cover Modules 1-10.** Teaching, guiding and explaining
+   only. **Do NOT generate practice questions, quizzes or drills during this
+   phase**, and do not push the user to be tested. If a gap shows up while
+   explaining, note it in `notes/mistakes-log.md` and keep going.
+2. **Phase 2 (after all of Modules 1-10 are covered): practice questions.**
+   The user will explicitly ask for questions, answer them, and Claude marks
+   them. Only start this when the user asks.
+
+### Out-of-scope modules
+The practical test covers Modules 1-10 only, but the user may ask for help with
+**later modules (11, 12, 13, ...)** for normal coursework. Help fully with
+those — just keep them out of the practical-test progress table and record them
+in `notes/beyond-module-10.md` so test prep stays clearly separated.
+
+## Where to record
+Work on and push to **`main`** (the user granted this explicitly on
+2026-09-04). The branch `claude/cloud-computing-practice-8s3q0y` was the
+original working branch and is kept in sync, but `main` is the source of truth.
 
 ## Accuracy note
 Module scope below is written from the standard ACAv3 syllabus. Exact lab
