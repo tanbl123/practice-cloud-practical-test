@@ -32,3 +32,17 @@ SQS, SNS, DynamoDB, CloudWatch, CloudFormation (partial).
 ### What it does not do
 Real Lambda code execution, real RDS engines, the AWS Console UI, or anything
 requiring genuine AWS networking. Use the AWS Academy lab environment for those.
+
+---
+
+## Repo layout
+
+| Path | Purpose |
+|------|---------|
+| `PROGRESS.md` | **Current status, next step, session log** — read this first |
+| `modules/00-overview.md` | Coverage map for Modules 1–10 and drilling order |
+| `modules/*.md` | Per-module notes: concepts, labs, gotchas, self-check questions |
+| `notes/mistakes-log.md` | Wrong answers to re-drill |
+| `notes/exam-tips.md` | Cross-module high-yield points |
+| `CLAUDE.md` | Instructions so a future Claude session resumes correctly |
+| `bin/`, `scripts/` | Optional offline AWS CLI sandbox |
