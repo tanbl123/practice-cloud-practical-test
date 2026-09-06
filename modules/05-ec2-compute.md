@@ -57,3 +57,29 @@ security group allowing HTTP, then reach the site by public IP/DNS.
 
 ## My notes
 _(fill in as we go)_
+
+---
+
+## Amazon EFS (Elastic File System) — also Module 5, so IN TEST SCOPE
+The Module 5 lab "Introducing Amazon EFS" confirms EFS is examinable here.
+
+| | **EBS** | **EFS** | **Instance store** |
+|---|---|---|---|
+| Type | block | **file (NFS)** | block |
+| Attach | **one instance** (usually), **one AZ** | **many instances, across AZs** | one instance |
+| Scope | AZ | **Regional** | the host |
+| Persists? | yes | yes | **NO — lost on stop/terminate** |
+| Scaling | fixed size you provision | **grows/shrinks automatically** | fixed |
+
+- **EFS is a shared filesystem**: many EC2 instances mount it at once and see the
+  same files. That is the thing EBS cannot do.
+- Linux only (NFS v4). The Windows equivalent is **FSx for Windows File Server**.
+- Mounted with an NFS client at a **mount target** in each AZ.
+- Storage classes: Standard and **Infrequent Access (EFS-IA)**, with lifecycle
+  management to move cold files automatically.
+
+**Choosing, for an exam scenario:**
+- "Shared files across many instances / a shared content directory" → **EFS**
+- "A single instance's disk / boot volume / database storage" → **EBS**
+- "Temporary scratch, maximum speed, data loss acceptable" → **instance store**
+- "Objects over HTTP, static website, unlimited scale" → **S3**
