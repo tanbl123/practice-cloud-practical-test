@@ -178,3 +178,23 @@ Never get stuck mid-build.
 Any number of tiers, same method. "Admins must SSH from the office" = one more
 arrow landing on the app tier = inbound port 22 from the **office CIDR**
 (outside the VPC, so a CIDR, not a group).
+
+### The port always belongs to the RECEIVER
+Every TCP connection has two ports:
+```
+sender 10.0.2.15:49321  --->  receiver 10.0.4.20:3306
+        random ephemeral            fixed service port
+```
+A security group inbound rule specifies the **destination** port — "which port on
+me may be reached". The sender's port is random per connection and is never
+configured.
+
+So the port in every rule = **the port the receiving service listens on**:
+ALB 80/443 · Apache 80 · **MySQL/Aurora 3306** · PostgreSQL 5432 · MS SQL 1433.
+
+Ask: *"what software runs on the box being pointed at, and what port does it
+listen on?"* That is the port, every time.
+
+Stateful security groups allow the reply back to the ephemeral port
+automatically. **Stateless NACLs do not** — which is why NACLs need an explicit
+outbound/inbound rule for ports 1024-65535.
