@@ -41,7 +41,11 @@ Notably **CloudFormation (Mod 11)** and **DR / RTO / RPO (Mod 16)** are NOT test
 ---
 
 ## Weak areas to revisit
-_(nothing recorded yet — populated as we drill)_
+- **Public vs private subnet routing** (IGW vs NAT, and that the NAT gateway
+  *lives in* a public subnet). Explained 2026-09-04; revisit.
+- **Working without step-by-step instructions** — the user's own stated concern:
+  guided labs give the steps, the practical gives only a scenario. See
+  `notes/build-order.md` (build order + requirement-to-action translation).
 
 ---
 
