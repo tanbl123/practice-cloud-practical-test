@@ -27,3 +27,4 @@ so it never gets confused with test preparation.
 | Date | Module | Topic | Notes |
 |------|--------|-------|-------|
 | 2026-09-04 | 14 | Guided Lab: Implementing a Serverless Architecture (S3 → Lambda → DynamoDB → Streams → Lambda → SNS) | The six `inventory-*.csv` download links did not work. Regenerated the files from the schema `store,item,count` (Berlin reproduced exactly from the lab text; the other five built to match, each with one zero-count item so the SNS alert fires). Files are in the session scratchpad, not committed. |
+| 2026-09-04 | 14 | Debugged the serverless pipeline: DynamoDB empty despite 6 successful Lambda invocations | Duration of ~2 ms gave it away — the Lambda code had been saved but not **Deployed**, so the default placeholder handler ran. S3 event notification was fine (6 invocations = 6 files). |

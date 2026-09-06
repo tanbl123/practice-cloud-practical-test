@@ -22,6 +22,12 @@ Cross-module points that decide marks. Add to this as the lecturer drops hints.
   not exist** — a config/typo problem, never a permissions one.
 - **Timeout vs connection refused:** a timeout points at routing (missing route,
   wrong route table); refused points at security groups, NACLs or the app.
+- **"Success" is not "did the right thing."** A Lambda reporting 0 errors and
+  100% success with a **~2 ms duration** did no real work — that is the default
+  placeholder handler returning instantly because the code was never
+  **Deployed** (Save is not Deploy). Localise a silent fault with two numbers:
+  *invocations* (did it run at all?) then *duration* (did it run long enough to
+  have done the work?).
 
 ## Answer-shaping habits
 - When a question says "highly available", your answer must contain
