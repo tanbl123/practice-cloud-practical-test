@@ -26,4 +26,4 @@ so it never gets confused with test preparation.
 ## Log of help given on out-of-scope modules
 | Date | Module | Topic | Notes |
 |------|--------|-------|-------|
-| _(none yet)_ | | | |
+| 2026-09-04 | 14 | Guided Lab: Implementing a Serverless Architecture (S3 → Lambda → DynamoDB → Streams → Lambda → SNS) | The six `inventory-*.csv` download links did not work. Regenerated the files from the schema `store,item,count` (Berlin reproduced exactly from the lab text; the other five built to match, each with one zero-count item so the SNS alert fires). Files are in the session scratchpad, not committed. |
