@@ -71,3 +71,37 @@ allows outbound; (5) NACL allows outbound **and** inbound ephemeral ports.
 
 ## My notes
 _(fill in as we go)_
+
+---
+
+## NAT gateway: Zonal vs Regional availability mode (console option)
+
+AWS added a **Regional** availability mode for NAT gateways in **November 2025**,
+so the console now asks Zonal or Regional. Course material predates it.
+
+| | **Zonal** (classic) | **Regional** (new) |
+|---|---|---|
+| Scope | one AZ | whole VPC, expands/contracts across AZs |
+| Public subnet | **required** | **not required** — standalone VPC resource |
+| HA | build **one per AZ** + a route table per private subnet | automatic; AWS follows your workloads |
+| Route tables | one target per AZ | **one ID referenced everywhere** |
+| Sub-modes | – | **Automatic** (AWS manages IPs/AZs) or **Manual** (you do) |
+
+### For the practical test: choose ZONAL
+The course, the labs and the marking scheme assume the classic model. If a
+scenario says *"make the NAT gateway highly available"*, the expected answer is
+**a NAT gateway per AZ with separate route tables** — that routing knowledge is
+what is being examined. "Use regional mode" may be more modern but does not
+demonstrate it.
+
+### Real-world choice
+- New build, HA without the management → **Regional (automatic)**
+- Must pin/control outbound public IPs (partner allowlists) → **Regional (manual)**
+- Existing architecture / strict per-AZ separation → **Zonal**
+
+Regional mode does not change *what* a NAT gateway does (outbound-only, still via
+the IGW). It changes **who manages per-AZ redundancy** — you, or AWS.
+
+Sources: AWS What's New (Nov 2025); VPC User Guide "Regional NAT gateways for
+automatic multi-AZ expansion"; AWS Networking blog "Introducing Amazon VPC
+Regional NAT Gateway".
