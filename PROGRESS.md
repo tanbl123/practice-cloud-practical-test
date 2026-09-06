@@ -10,6 +10,11 @@ the test" does NOT mean "skippable".
 
 ---
 
+## URGENT — see `notes/deadline-plan.md`
+6 labs outstanding, ~336 points, due 8 Sept midnight; practical test 9 Sept.
+Four of the six are **Challenge labs**, which are scenario-based and therefore
+double as practical-test practice.
+
 ## Next step
 > **Phase 1 — work through Modules 1-10 (teaching/guiding only, no questions yet).**
 > Modules 8 and 9 labs are done. Next best: **Module 7 (Creating a Networking
