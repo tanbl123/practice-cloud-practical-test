@@ -1,8 +1,12 @@
 # Progress Tracker
 
 **Course:** AWS Academy Cloud Architecting (ACAv3) — course 174939
-**Assessment:** Practical test covering **Modules 1–10**
-**Branch:** `claude/cloud-computing-practice-8s3q0y`
+**Assessment 1:** Practical test covering **Modules 1–10**
+**Assessment 2 — DEADLINE 8 SEPTEMBER 2026, MIDNIGHT:** coursework marks require
+**all guided labs across all modules** to be completed and submitted. This
+includes modules outside the practical-test scope (11-17), so "out of scope for
+the test" does NOT mean "skippable".
+**Branch:** `claude/cloud-computing-practice-8s3q0y` (main is source of truth)
 
 ---
 

@@ -34,11 +34,12 @@ between sessions, so this repo is the only memory of what we have already done.
    The user will explicitly ask for questions, answer them, and Claude marks
    them. Only start this when the user asks.
 
-### Out-of-scope modules
-The practical test covers Modules 1-10 only, but the user may ask for help with
-**later modules (11, 12, 13, ...)** for normal coursework. Help fully with
-those — just keep them out of the practical-test progress table and record them
-in `notes/beyond-module-10.md` so test prep stays clearly separated.
+### Out-of-scope modules — still REQUIRED for coursework marks
+The practical test covers Modules 1-10 only, but **coursework marks require every
+guided lab in every module to be submitted, deadline 8 September 2026 midnight.**
+So Modules 11-17 are out of *test* scope but NOT optional. Help fully with them;
+just keep them out of the practical-test progress table and record them in
+`notes/beyond-module-10.md`.
 
 ## Where to record
 Work on and push to **`main`** (the user granted this explicitly on
