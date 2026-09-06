@@ -197,3 +197,20 @@ Mixing these up is the single biggest time sink in this lab.
 3. Why does `auth.js` need the user pool ID inside the `Logins` map?
 4. How does the app know `admin` may see the admin page?
 5. Authorization code grant vs implicit grant — which is preferred and why?
+
+## Seen for real (2026-09-04): doubled Cognito domain
+Symptom: clicking LOGIN goes to
+`<prefix>.auth.us-east-1.amazoncognito.com.auth.us-east-1.amazoncognito.com/login?...`
+and the browser shows **DNS_PROBE_FINISHED_NXDOMAIN**.
+
+Cause: `CONFIG.COGNITO_DOMAIN_STR` was set to the **full** domain. The app
+appends `.auth.<region>.amazoncognito.com` itself, so the suffix appears twice.
+
+Fix: set it to the **prefix only**, re-upload the website to S3, hard-refresh.
+
+**Rule for this file:** two of the four values are prefixes, one is a full URL.
+```js
+CONFIG.BASE_NODE_SERVER_STR   = "https://d123456.cloudfront.net";  // FULL URL
+CONFIG.COGNITO_DOMAIN_STR     = "us-east-1abcdefg";                // PREFIX ONLY
+CONFIG.CLOUDFRONT_DISTRO_STR  = "d123456";                         // PREFIX ONLY
+```
