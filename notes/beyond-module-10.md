@@ -87,3 +87,19 @@ Ports the gateway needs: 80 (activation), 443 (HTTPS to AWS), 53 (DNS),
 ### Nice detail
 After mounting, `df -h` reports the share as **8.0E (exabytes)** — S3 has no
 fixed capacity, so the gateway advertises an effectively unlimited filesystem.
+
+### Lab environment fault found 2026-09-04 (Module 16 Storage Gateway lab)
+`s3:CreateBucket` is **denied by a Service Control Policy** in the AWS Academy
+account, and the deny is **Region-scoped**: bucket creation works in
+**us-east-1** but fails in **us-east-2**, which the lab requires.
+
+```
+User: arn:aws:sts::919382086113:assumed-role/voclabs/... is not authorized to
+perform: s3:CreateBucket ... with an explicit deny in a service control policy:
+arn:aws:organizations::150384205273:policy/o-y4yn0eoyjj/service_control_policy/p-c4b03215
+```
+
+Not fixable by a student — restarting the lab does not help, because an SCP is
+attached to the AWS Organization, not the session. Reported to the educator.
+Workaround for learning: run CRR between whichever Regions the SCP does allow;
+the concepts are identical.

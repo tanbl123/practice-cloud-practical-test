@@ -20,6 +20,12 @@ Cross-module points that decide marks. Add to this as the lecturer drops hints.
   your application. Useful for telling which layer failed.
 - **`DNS_PROBE_FINISHED_NXDOMAIN` means the hostname itself is malformed or does
   not exist** — a config/typo problem, never a permissions one.
+- **AccessDenied despite having permissions? Suspect a Service Control Policy.**
+  An SCP is an AWS Organizations guardrail that sets the *maximum* permissions
+  for an account. An SCP deny cannot be granted back by ANY IAM policy — not
+  AdministratorAccess, not root. Evaluation order: **SCP deny > explicit IAM
+  deny > explicit allow > implicit deny.** (Seen live 2026-09-04: an SCP blocked
+  `s3:CreateBucket` in one Region while allowing it in another.)
 - **Timeout vs connection refused:** a timeout points at routing (missing route,
   wrong route table); refused points at security groups, NACLs or the app.
 - **"Success" is not "did the right thing."** A Lambda reporting 0 errors and
