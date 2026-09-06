@@ -11,6 +11,18 @@ Cross-module points that decide marks. Add to this as the lecturer drops hints.
    "highly available" requirement (Modules 6, 10).
 5. **Health check path returns 404**, so ALB targets never go healthy (Module 10).
 
+## Diagnostic nuggets worth quoting in an answer
+- **S3 returns `AccessDenied`, not `NoSuchKey`, for a missing object** when the
+  caller lacks `s3:ListBucket`. It is deliberate: it stops anonymous callers
+  probing which keys exist. So an S3 AccessDenied means *either* a permissions
+  problem *or* a wrong key — check the path before rewriting the bucket policy.
+- **An XML `<Error><Code>...` page means the response came from S3**, not from
+  your application. Useful for telling which layer failed.
+- **`DNS_PROBE_FINISHED_NXDOMAIN` means the hostname itself is malformed or does
+  not exist** — a config/typo problem, never a permissions one.
+- **Timeout vs connection refused:** a timeout points at routing (missing route,
+  wrong route table); refused points at security groups, NACLs or the app.
+
 ## Answer-shaping habits
 - When a question says "highly available", your answer must contain
   **two or more Availability Zones**.

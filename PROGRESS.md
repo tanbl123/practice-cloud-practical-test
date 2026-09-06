@@ -8,10 +8,10 @@
 
 ## Next step
 > **Phase 1 — work through Modules 1-10 (teaching/guiding only, no questions yet).**
-> Module 8 (Connecting Networks) is done. Next best: **Module 7 (Creating a
-> Networking Environment)** — the VPC that Module 8 peers together, and the
-> foundation for Modules 5, 9 and 10. Practice questions come later, in Phase 2,
-> only when the user asks.
+> Modules 8 and 9 labs are done. Next best: **Module 7 (Creating a Networking
+> Environment)** — the VPC that Module 8 peers together, and the foundation for
+> Modules 5, 9 and 10. Practice questions come later, in Phase 2, only when asked.
+> Still to get: confidence ratings (1-5) for Modules 8 and 9.
 
 ---
 
@@ -29,7 +29,7 @@ Legend: `not started` · `reading` · `lab done` · `covered` · `confident`
 | 6 | Adding a Database Layer | not started | – | |
 | 7 | Creating a Networking Environment | not started | – | |
 | 8 | Connecting Networks | **lab done** | – | VPC peering guided lab walked through 2026-09-04 |
-| 9 | Securing User, Application, and Data Access | not started | – | |
+| 9 | Securing User, Application, and Data Access | **lab done** | – | Cognito guided lab **30/30** (2026-09-04) |
 | 10 | Implementing Monitoring, Elasticity, and High Availability | not started | – | |
 
 **Out of scope (Modules 11-17 + Capstone):** see `notes/beyond-module-10.md`.
@@ -66,3 +66,8 @@ _(nothing recorded yet — populated as we drill)_
   is Module 11 and NOT in the test**; **DR/RTO/RPO is Module 16 and NOT in the test**.
 - Walked through the **Module 8 guided lab: Creating a VPC Peering Connection**
   (peering handshake, routes on both sides, VPC Flow Logs, troubleshooting order).
+- Guided the **Module 9 guided lab: Securing Applications by Using Amazon
+  Cognito** live, start to finish. **Result: 30/30.** Debugged three real
+  errors along the way: doubled Cognito domain (prefix vs full domain), an
+  unreplaced `<cognito-user-pool-id>` placeholder in `package.json`, and an
+  S3 `AccessDenied` from navigating directly to `/report`.
