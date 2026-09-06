@@ -101,3 +101,68 @@ protocol packets bytes start end action log-status
 Instance metadata (`169.254.169.254`), Amazon Time Sync (`169.254.169.123`),
 DHCP traffic, traffic to the Amazon-provided DNS server, traffic to the reserved
 VPC router address, and traffic between an ENI and a Network Load Balancer ENI.
+
+---
+
+## Run sheet — do-it checklist with verification points
+
+Written 2026-09-04 for working through the lab live. Each task has a
+**checkpoint**: if the checkpoint does not show what it should, stop and fix it
+before moving on. Do not stack an error under another task.
+
+### Before starting
+- Lab VPC = `10.0.0.0/16` (app, public subnet) · Shared VPC = `10.5.0.0/16`
+  (database, private subnet, **no internet gateway**).
+- Do **not** change the lab Region.
+
+### Task 1 — peering connection
+- Peering connections → Create peering connection
+- Name `Lab-Peer` · Requester **Lab VPC** · Accepter **Shared VPC**
+- Actions → **Accept request**
+- ✅ **Checkpoint:** status reads **Active** (not *Pending acceptance*).
+
+### Task 2 — routes on BOTH sides
+| Route table | Destination | Target |
+|---|---|---|
+| Lab Public Route Table | `10.5.0.0/16` | `Lab-Peer` (pcx-) |
+| Shared-VPC Route Table | `10.0.0.0/16` | `Lab-Peer` (pcx-) |
+- Destination is always the **other** VPC's CIDR. Clear stray check boxes before
+  editing the second table — editing the wrong route table is easy here.
+- ✅ **Checkpoint:** both tables show a `pcx-` route with status **Active**.
+
+### Task 3 — flow logs on Shared VPC
+- Your VPCs → **Shared VPC** → Flow logs tab → Create flow log
+- Name `SharedVPCLogs` · Max aggregation interval **1 minute** ·
+  Destination **CloudWatch Logs** · Log group `ShareVPCFlowLogs` ·
+  IAM role `vpc-flow-logs-Role`
+- ✅ **Checkpoint:** flow log appears with status **Active**. The log group may
+  take a few minutes to exist — that is normal.
+
+### Task 4 — test
+- AWS Details → copy **EC2PublicIP** → open in a browser tab
+- Settings → Endpoint = DB endpoint from AWS Details · Database `inventory` ·
+  Username `admin` · Password `lab-password` → Save
+- ✅ **Checkpoint:** inventory data displays. This proves peering works, because
+  Shared VPC has no internet gateway.
+
+### Task 5 — analyse
+- CloudWatch log group `ShareVPCFlowLogs` → log stream `eni-*`
+- Look for lines containing **3306**; expect **ACCEPT** and both directions.
+- ✅ **Checkpoint:** you can point at a line and say which IP is the database,
+  which is the app, and which direction it is.
+
+### Finish
+- **Submit** (top of lab instructions) → Yes. Check Grades. Submit again after
+  any fix — the last submission counts.
+- Then **End Lab**.
+
+### If a checkpoint fails — troubleshoot in this order
+1. Peering status **Active**? (a pending request routes nothing)
+2. **Both** routes present, correct CIDR, target `pcx-`?
+3. DB security group allows **3306 from `10.0.0.0/16`**?
+4. NACLs allow 3306 out and **ephemeral ports 1024-65535** back?
+5. Endpoint and credentials typed correctly?
+
+**Symptom tells you the layer:** a **hang/timeout** points at routing (often the
+missing return route); **connection refused** or an application error points at
+security groups, NACLs or credentials.
