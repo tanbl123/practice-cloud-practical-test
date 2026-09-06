@@ -124,3 +124,57 @@ Marks are lost on things that "look done". Check each of these explicitly:
 5. If something does not work, troubleshoot **outside-in**:
    routing -> security group -> NACL -> application.
    Symptom tells the layer: **timeout = routing**, **refused = security/app**.
+
+---
+
+## Part 5: Deriving security groups from any scenario
+
+### The only question a security group answers
+> **"Who is allowed to talk TO this thing?"**
+
+Not what it needs to reach. Security groups are **stateful** (return traffic is
+automatic) and **outbound is allow-all by default** — so you almost never touch
+outbound rules.
+
+### The method: draw the arrows, write a rule on each arrowhead
+```
+Internet  --->  ALB  --->  App servers  --->  Database
+```
+**Every arrowhead = one inbound rule, on the RECEIVER, naming the SENDER.**
+
+| Rule goes on | Allow FROM | Port |
+|---|---|---|
+| ALB SG | the internet `0.0.0.0/0` | 80, 443 |
+| App SG | **the ALB's security group** | 80 |
+| DB SG | **the App's security group** | 3306 |
+
+The rule always lives on the **receiver**. Adding "let the ALB talk out" is the
+classic beginner error — outbound is already open.
+
+### Group or CIDR? One decision rule
+> **Is the sender something I control inside this VPC?**
+> **Yes -> reference its security group. No -> use a CIDR.**
+
+Why it matters: under Auto Scaling, instance IPs are never stable. A security
+group reference follows membership automatically; a hardcoded CIDR breaks at the
+next scale event. **This is the justification to write in an answer.**
+
+### Ports to know cold
+80/443 HTTP/HTTPS · 22 SSH · 3389 RDP · **3306 MySQL/Aurora** ·
+**5432 PostgreSQL** · 1433 MS SQL · 1521 Oracle
+
+### Build trick
+You cannot reference a security group that does not exist yet. **Create all the
+security groups empty first** (names only), then go back and add the rules.
+Never get stuck mid-build.
+
+### Two checks
+1. **Trace one packet** end to end — does every hop have an inbound rule allowing it?
+2. **Does any tier accept traffic from anything other than the tier above it?**
+   If yes, either justify it or it is a security hole. (The Module 10 lab's
+   original DB rule allowing all of `10.0.0.0/16` is exactly this.)
+
+### It generalises
+Any number of tiers, same method. "Admins must SSH from the office" = one more
+arrow landing on the app tier = inbound port 22 from the **office CIDR**
+(outside the VPC, so a CIDR, not a group).
