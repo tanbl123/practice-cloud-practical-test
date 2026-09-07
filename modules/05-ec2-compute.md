@@ -83,3 +83,40 @@ The Module 5 lab "Introducing Amazon EFS" confirms EFS is examinable here.
 - "A single instance's disk / boot volume / database storage" → **EBS**
 - "Temporary scratch, maximum speed, data loss acceptable" → **instance store**
 - "Objects over HTTP, static website, unlimited scale" → **S3**
+
+## EFS — build path for a practical task
+```
+EFS → Create file system
+   Name: <name>
+   VPC:  <the lab VPC>
+   [Customize] for: Storage class (Standard | One Zone),
+                    lifecycle policy to IA,
+                    encryption at rest,
+                    performance / throughput mode
+   → Create
+```
+Then **Network tab → mount targets**: one per AZ, each with a **security group**.
+
+Mount it on an EC2 instance:
+```bash
+sudo yum install -y amazon-efs-utils
+sudo mkdir -p /mnt/efs
+sudo mount -t efs -o tls fs-xxxxxxxx:/ /mnt/efs
+df -h            # confirm it is mounted
+```
+
+### The detail most likely to be marked
+**The mount target's security group must allow inbound NFS (TCP 2049) from the
+EC2 instances' security group.** This is the same security-group-chaining
+pattern as the three-tier build: source = a security group, not a CIDR. Without
+it the mount hangs and eventually times out (a routing/permission symptom, not
+"connection refused").
+
+Second most likely: **a mount target in every AZ** where instances run — that is
+what makes EFS highly available, and matches the "two AZs" rule.
+
+### Quick decisions a brief might ask for
+- **Standard vs One Zone** — One Zone is cheaper but lives in a single AZ, so it
+  is not highly available.
+- **Lifecycle policy** — move files not accessed for N days to **EFS-IA** to cut cost.
+- **Encryption at rest** — must be chosen **at creation** (same rule as EBS and RDS).

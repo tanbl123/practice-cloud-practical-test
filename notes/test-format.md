@@ -28,7 +28,7 @@ of these eight areas:
 |---|---|
 | 3 | IAM user + group + least-privilege policy |
 | 4 | S3 bucket + static website hosting + bucket policy |
-| 5 | EC2 launch + **user data** + security group (also EBS volume, EFS) |
+| 5 | EC2 launch + **user data** + security group · EBS volume · **EFS file system + mount target (NFS 2049 from the EC2 SG)** |
 | 6 | RDS instance (subnet group, Multi-AZ) **and DynamoDB table** |
 | 7 | VPC + subnets + IGW + NAT + route tables + associations |
 | 8 | VPC peering + routes on both sides |
