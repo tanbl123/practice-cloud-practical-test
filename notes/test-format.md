@@ -3,9 +3,12 @@
 **Date: 9 September 2026. Scope: Modules 1-10, PLUS DynamoDB.**
 
 - **4 tasks**
-- **Each task covers a DIFFERENT service** (examples given: task 1 Auto Scaling,
-  task 2 VPC)
+- **Each task covers a DIFFERENT service**
 - Tasks are **independent**, not one connected build
+- **The services and their order are RANDOM.** "Task 1 Auto Scaling, task 2 VPC"
+  was only an *example of the style* — it is NOT the actual order or a
+  guaranteed list. Any service from **Modules 1-10** can appear, in any position.
+  Plus DynamoDB.
 
 ## What this format means for strategy
 1. **A failure does not cascade.** Each task is scored on its own, so a task you
@@ -17,20 +20,24 @@
    three-tier architecture. Think "create a VPC with public and private subnets"
    rather than "build the entire café application".
 
-## Services confirmed / likely
-| Likelihood | Service | Module |
-|---|---|---|
-| **Confirmed** | Auto Scaling (+ ALB) | 10 |
-| **Confirmed** | VPC (subnets, IGW, NAT, route tables) | 7 |
-| **Confirmed** | **DynamoDB** | 6 |
-| Likely 4th | S3 / EC2 / IAM | 4 / 5 / 3 |
+## Because the draw is random, prepare for BREADTH not depth
+Do not over-invest in three services. Be able to do **one quick build in each**
+of these eight areas:
 
-## Revision priority given this format
-1. **VPC build from scratch** — `notes/build-order.md` steps 1-6
-2. **ALB + Auto Scaling build** — launch template, target group, 2 AZs
-3. **DynamoDB table creation** — see `modules/06-database-layer.md`
-4. **S3 bucket + policy / static hosting**, **EC2 launch + user data + SG**,
-   **IAM policy JSON**
+| Mod | Be able to build |
+|---|---|
+| 3 | IAM user + group + least-privilege policy |
+| 4 | S3 bucket + static website hosting + bucket policy |
+| 5 | EC2 launch + **user data** + security group (also EBS volume, EFS) |
+| 6 | RDS instance (subnet group, Multi-AZ) **and DynamoDB table** |
+| 7 | VPC + subnets + IGW + NAT + route tables + associations |
+| 8 | VPC peering + routes on both sides |
+| 9 | KMS key + encrypted EBS volume |
+| 10 | ALB + target group + launch template + Auto Scaling group |
+
+Modules 1-2 are concept-only (Well-Architected Framework, global
+infrastructure) — they cannot be a build task, but the vocabulary may frame a
+scenario.
 
 ---
 
