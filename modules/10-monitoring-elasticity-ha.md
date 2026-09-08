@@ -369,3 +369,43 @@ same physical zone for everyone. Never needs acting on; just know what it is.
 
 **RULE: if a requirement says "highly available" or "fault tolerant", the first
 thing you build is subnets in two different AZs — everything else references them.**
+
+---
+
+## ASG timers — which one to change (asked 2026-09-08)
+
+Two distinct kinds of timer. Pick by what "fail" means in the question.
+
+### A. Before a failing instance is declared unhealthy and replaced
+- **Health check grace period** — ASG → Details → **Health checks → Edit**. Default
+  **300 s**. How long after launch the ASG **ignores** health checks. Fixes the
+  classic loop: app takes 4 min to boot, ALB marks it unhealthy at 60 s, ASG
+  terminates and relaunches forever. **Raise it above the app's boot time.**
+- **Health check type** — same screen: **EC2** (is the instance running?) vs
+  **ELB** (is the app responding?). With a load balancer, **ELB** is the answer,
+  and it is commonly graded.
+- **Target group health checks** — Target Groups → Health checks → Edit → Advanced:
+
+| Setting | Default | Effect |
+|---|---|---|
+| Interval | 30 s | How often it checks |
+| Unhealthy threshold | 2 | Consecutive failures before "unhealthy" |
+| Timeout | 5 s | How long to wait for a response |
+| Healthy threshold | 5 | Consecutive passes to recover |
+
+**Detection time = Interval × Unhealthy threshold** (default 30 × 2 = **60 s**).
+Raise either to tolerate a blip.
+
+### B. Between scaling activities
+- **Default instance warmup** — on the **scaling policy**. New instance's metrics
+  are ignored while it boots, so the policy does not over-scale.
+- **Default cooldown** — ASG → Details → Advanced configurations, default 300 s.
+  Pause after a scaling activity before another may start; stops thrashing.
+
+### Wording → answer
+| Question wording | Answer |
+|---|---|
+| "instances replaced before the application finishes starting" | **Increase the health check grace period** |
+| "ASG should use the load balancer's view of health" | **Health check type = ELB** |
+| "a brief blip should not cause a replacement" | **Raise unhealthy threshold / interval** on the target group |
+| "group adds too many instances at once" | **Increase instance warmup / cooldown** |
