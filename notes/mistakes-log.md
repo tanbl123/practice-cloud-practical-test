@@ -30,3 +30,30 @@ Q1 0/1, Q4 0/1, Q5 0/1.
 console and look. Never infer the answer from what a correct architecture
 would have — the lab is testing observation, and the environment is
 deliberately imperfect.**
+
+## 2026-09-08 — "the port belongs to the receiver" (RECURRING — second time)
+Asked whether `db-sg` should allow **port 80** because the traffic comes from
+`app-sg`. **No — `db-sg` allows 3306**, because MySQL is what is listening there.
+
+A security group rule has **two independent fields**:
+- **Port** = which service *on the receiver* may be reached → decided by **what
+  software runs on the receiver**.
+- **Source** = who may reach it → decided by **who the sender is** (inside the
+  VPC: another **security group**; outside: a **CIDR**).
+
+| SG (receiver) | Running on it | Port | Source |
+|---|---|---|---|
+| `web-sg` (ALB) | HTTP listener | **80** | Anywhere-IPv4 |
+| `app-sg` (app server) | web app over HTTP | **80** | `web-sg` |
+| `db-sg` (MySQL) | **MySQL** | **3306** | `app-sg` |
+
+The app tier's 80 is a coincidence of it being a web app — it is **not inherited
+from the sender**. If the app listened on 8080, that row would say 8080 and
+`db-sg` would still say 3306.
+
+**Two questions to ask for every rule:**
+1. What is this thing listening on? → the **port** (80 HTTP, 443 HTTPS, 22 SSH,
+   3306 MySQL, 5432 PostgreSQL, 2049 NFS/EFS).
+2. Who is allowed to talk to it? → the **source**.
+
+Has now come up twice. Re-drill before any security-group task.
