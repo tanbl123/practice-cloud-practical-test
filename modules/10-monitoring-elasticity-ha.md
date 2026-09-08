@@ -228,7 +228,30 @@ low: it makes the demo fire quickly.
 Watch it in **ASG → Activity** (scaling activity entries) and **Monitoring**.
 Scale-in afterwards is slow (~15 min of low CPU) — do not wait for it.
 
-## The six inspection questions — how to derive each answer
+## The six inspection questions — actual multiple-choice answers (seen 2026-09-08)
+
+| Q | Question | Answer |
+|---|---|---|
+| 1 | Which ports are open in CafeSG? | **Ports 80 and 443** |
+| 2 | Can you connect from the internet to instances in Public Subnet 1? | **Yes — if the instance has a public IP address, and the security group and network ACL allow it** |
+| 3 | *Should* an instance in Private Subnet 1 reach the internet? | **Yes** |
+| 4 | *Should* an instance in Private Subnet 2 reach the internet? | **Yes** |
+| 5 | Can you connect to CafeWebAppServer from the internet? | **Yes** |
+| 6 | Name of the AMI? | **Cafe WebServer Image** |
+
+Notes on the distractors:
+- Q1: *"22, 80, and 443"* is the trap — there is **no SSH rule**, because this
+  environment uses **Session Manager** (hence `CafeRole` on the launch template).
+  "3899" is not a real service port.
+- Q2: both "No" options are self-refuting — a public subnet by definition has an
+  IGW route, and a **NAT gateway is irrelevant to inbound traffic**.
+- Q3/Q4: the verb is **"should"**, not "can" — it asks about *design intent*.
+  Private Subnet 2 currently **cannot**, and that is the defect Task 2 fixes;
+  the answer is still Yes.
+- Q5: **Yes** — CafeWebAppServer is in a **public** subnet with a public IP and
+  CafeSG allows 80/443. That single non-HA server is the premise of the lab.
+
+## The same six questions — how to derive each answer
 Do not memorise these; derive them, because the practical test will ask the same
 *shape* of question about a different environment.
 
