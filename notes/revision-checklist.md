@@ -88,3 +88,42 @@ Check in **every Region you touched**.
   VPC from scratch, EC2 + security groups, ALB + Auto Scaling (incl. stress test),
   DynamoDB, S3 (versioning, BPA, bucket policy, static website hosting),
   EFS (mounted across two AZs), EBS (+ snapshot → cross-AZ volume), KMS.
+
+---
+
+# FINAL COVERAGE STATE (2026-09-09, morning of the test)
+
+## Still buildable — 4 items, ~25 min
+- [ ] **RDS read replica** (Mod 6, 10 min) — Databases → Actions → **Create read replica**.
+  Note the form offers another AZ or **another Region**, and gives **no standby**.
+  Makes Multi-AZ vs read replica concrete. Delete it afterwards.
+- [ ] **VPC gateway endpoint for S3** (Mod 7, 5 min) — VPC → Endpoints → Create →
+  `com.amazonaws.us-east-1.s3` → **Gateway** → tick the **private route table**.
+  Answer to *"private instances must reach S3 without a NAT gateway"*.
+- [ ] **CloudTrail Event history** (Mod 9, 2 min, read-only) — find the KMS events.
+  **CloudWatch = metrics/logs. CloudTrail = API calls (who did what, when).**
+- [ ] **Secrets Manager** (Mod 9, 5 min, optional) — store the RDS password.
+  Answer to *"the database password must not be in the code"*.
+
+## Cannot build in the Learner Lab — read only
+| Topic | Mod | Key point |
+|---|---|---|
+| IAM | 3 | Blocked. Groups for people · roles for services · **explicit Deny wins** · **SCP > IAM** |
+| Route 53 routing policies | 10 | Simple · Weighted · Latency · **Failover** · Geolocation |
+| VPN / Direct Connect / Transit Gateway | 8 | VPN = over internet, encrypted, fast to set up · DX = dedicated line, consistent, slow to provision · TGW = hub for many VPCs |
+| SCPs / Organizations | 9 | **An SCP deny beats every IAM allow** |
+| Well-Architected pillars | 1-2 | Operational excellence · Security · Reliability · Performance efficiency · Cost optimization · Sustainability |
+
+## Built and verified by hand (2026-09-08/09)
+VPC from scratch · 4 subnets across 2 AZs · IGW · NAT gateway · route tables +
+**subnet associations** · NACLs · three-tier security groups · EC2 · user data ·
+launch templates **+ versioning** · AMI · EBS + snapshot + **cross-AZ restore** ·
+**EFS mounted on two instances in two AZs** · ALB · target groups · **Auto Scaling
++ target tracking + stress test** · Session Manager · IAM instance profiles ·
+**DynamoDB** (table, GSI, PITR, query vs scan, sparse index) · **S3** (versioning,
+Block Public Access, bucket policy, static website, SSE-KMS, replication,
+lifecycle) · **KMS** (create, encrypt, disable → AccessDenied, re-enable) ·
+**RDS** (DB subnet group across 2 AZs, private, db-sg, initial database name) ·
+**CloudWatch alarm → SNS email**
+
+That is every service in Modules 1-10 plus DynamoDB except the four listed above.
