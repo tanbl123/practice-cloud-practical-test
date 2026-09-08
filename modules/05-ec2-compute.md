@@ -120,3 +120,62 @@ what makes EFS highly available, and matches the "two AZs" rule.
   is not highly available.
 - **Lifecycle policy** — move files not accessed for N days to **EFS-IA** to cut cost.
 - **Encryption at rest** — must be chosen **at creation** (same rule as EBS and RDS).
+
+---
+
+## EFS — built and verified end to end (2026-09-08)
+
+### Build order
+1. **Security group first** — `efs-sg`, inbound **NFS 2049 from the EC2 instances'
+   security group** (`app-sg`). *This rule is the graded line in every EFS task.*
+2. **EFS → Create file system → Customize** (not the quick create).
+   - Network access step: a **mount target per AZ**, in the **private subnets**
+     where the instances live, each with **`efs-sg`** (remove `default`).
+   - A mount target must be in the **same AZ** as the instance mounting it.
+3. Wait for both mount targets **Available**.
+
+### Mount (the lecturer's version, which is the robust one)
+```bash
+sudo yum -y install amazon-efs-utils
+sudo yum -y install python3-botocore      # DO NOT SKIP — see below
+sudo mkdir -p /mnt/efs
+sudo mount -t efs -o tls fs-XXXXXXXX:/ /mnt/efs
+df -h /mnt/efs                            # ALWAYS verify
+```
+Persistent across reboot:
+`echo "fs-XXXX:/ /mnt/efs efs _netdev,tls 0 0" | sudo tee -a /etc/fstab`
+
+### What actually went wrong (both real, both cost time)
+- **Wrong file system ID.** `Failed to resolve "fs-….efs.us-east-1.amazonaws.com"`.
+  The error's FIRST clause said *"check that your file system ID is correct"* — and
+  it was right. **Read the first clause of an error, not the last.**
+- **`python3-botocore` missing.** Without it the EFS helper cannot fall back to
+  looking up the mount target IP via the API when DNS is unhelpful. Installing it
+  is what finally made the mount succeed.
+- VPC needs **both** *Enable DNS resolution* **and** *Enable DNS hostnames* for the
+  EFS DNS name to resolve.
+
+### TRAP: a failed mount looks like success
+`mount` failing leaves `/mnt/efs` as an ordinary **local folder**. Writing to it
+appears to work, and the other instance sees nothing. **Always `df -h /mnt/efs`
+after mounting** — you want a line for the file system showing **8.0E**.
+
+### Reading the verified output
+- `127.0.0.1:/` as the filesystem = correct when using `-o tls`; the mount goes via
+  local **stunnel**, which encrypts and forwards to the mount target. Without
+  `tls` you see the mount target IP (e.g. `10.0.2.37:/`).
+- **8.0E** = EFS reporting effectively unlimited. EFS grows/shrinks automatically;
+  you never provision a size. Contrast EBS: fixed size, chosen up front, paid for
+  whether used or not.
+
+### Failure → cause
+| Symptom | Cause |
+|---|---|
+| `Failed to resolve fs-…` | Wrong file system ID; or VPC DNS resolution/hostnames off |
+| Mount **hangs** | `efs-sg` missing NFS 2049 from the instances' SG |
+| `mount point /mnt/efs does not exist` | `mkdir -p /mnt/efs` not run on that instance |
+| Mounts but other instance sees nothing | The mount silently failed — check `df -h` |
+
+### Teardown
+`sudo umount /mnt/efs` on each instance → **EFS → Delete** (removes mount targets)
+→ delete `efs-sg`.

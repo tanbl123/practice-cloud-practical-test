@@ -43,12 +43,12 @@ Legend: `not started` · `reading` · `lab done` · `covered` · `confident`
 | 2 | Introducing Cloud Architecting | not started | – | |
 | 3 | Securing Access | not started | – | IAM foundations |
 | 4 | Adding a Storage Layer with Amazon S3 | not started | – | |
-| 5 | Adding a Compute Layer Using Amazon EC2 | not started | – | |
-| 6 | Adding a Database Layer | not started | – | |
+| 5 | Adding a Compute Layer Using Amazon EC2 | **covered** | – | EC2 + SGs + launch templates + **EFS built and verified** 2026-09-08 |
+| 6 | Adding a Database Layer | **covered** | – | **DynamoDB built** 2026-09-08 (table, GSI, PITR, items). RDS read-only revision. |
 | 7 | Creating a Networking Environment | **lab done** | – | Guided + **Challenge lab** walked through 2026-09-08 (VPC, subnets, IGW, NAT, route tables, NACLs) |
 | 8 | Connecting Networks | **lab done** | – | VPC peering guided lab walked through 2026-09-04 |
 | 9 | Securing User, Application, and Data Access | **lab done** | – | Cognito guided lab **30/30** (2026-09-04) |
-| 10 | Implementing Monitoring, Elasticity, and High Availability | **in progress** | – | **Challenge lab run sheet written 2026-09-08** — ALB + ASG + target tracking + 2nd NAT gateway |
+| 10 | Implementing Monitoring, Elasticity, and High Availability | **covered** | – | Challenge lab + **full ALB/ASG build from scratch 2026-09-08**, incl. debugging 502 and a blank launch template version |
 
 **Out of scope (Modules 11-17 + Capstone):** see `notes/beyond-module-10.md`.
 Notably **CloudFormation (Mod 11)** and **DR / RTO / RPO (Mod 16)** are NOT tested.
@@ -110,3 +110,32 @@ Notably **CloudFormation (Mod 11)** and **DR / RTO / RPO (Mod 16)** are NOT test
   every scaling mark.
 - Platform note: the Vocareum lab pages had been spinning earlier (confirmed not
   browser-related via incognito); see `notes/deadline-plan.md`.
+
+### 2026-09-08 (late) — Learner Lab build drills, night before the test
+Moved to the **AWS Academy Learner Lab** ($50 budget) for hands-on drills. Agreed
+two standing rules, both now in `CLAUDE.md`: **no coding in the test** (so hand
+over code complete), and **every task ends with a teardown list**.
+
+Built by hand, unguided:
+- **DynamoDB** — first time ever. `DemoProducts` walkthrough (items, scan vs query,
+  the "cannot query a non-key attribute" constraint, GSI, sparse index behaviour,
+  projections), then the `CafeOrders` practice task. Phase 2 started.
+- **VPC from scratch** — VPC, 4 subnets across 2 AZs, IGW, NAT gateway, both route
+  tables with associations, auto-assign public IP.
+- **Security groups** — `alb-sg` / `app-sg` / `efs-sg` chain derived from the arrows.
+- **ALB + Auto Scaling** — launch template, ASG (no LB), ALB, target group,
+  **attached the target group to the ASG afterwards**, healthy targets, load test
+  with `stress`.
+- **EFS** — `efs-sg` (NFS 2049 from `app-sg`), mount targets in both private
+  subnets, mounted on two instances in two AZs, wrote on one and read on the other.
+
+Debugged for real, all logged: **502 vs 503 vs 504**; a **launch template version
+saved blank** because "Source template version" was not set; a tag placed under
+**Template tags** instead of **Resource tags**; a **wrong EFS file system ID**;
+**python3-botocore** missing for the EFS mount helper; and a **silently failed
+mount** that made a local folder look like EFS.
+
+Concepts nailed down along the way: Elastic IPs (three-question test, and that an
+EIP never makes anything public), how multi-AZ is actually achieved (subnets, not
+AZs), which ASG timer to change for which symptom, launch template versioning
+semantics, and that a security group belongs to a **resource**, not to a link.
