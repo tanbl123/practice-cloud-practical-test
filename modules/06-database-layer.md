@@ -170,4 +170,3 @@ need **Batch Replication**) · replication is **asynchronous**.
 **Scope note:** AMIs/snapshots are **Module 5 (in scope)**. Cross-Region copy as a
 *DR strategy* (RTO/RPO, pilot light, warm standby) is **Module 16 — OUT of scope**.
 Know the mechanism in one sentence; do not drill it.
-EOF
