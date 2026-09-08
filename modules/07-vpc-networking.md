@@ -105,3 +105,54 @@ the IGW). It changes **who manages per-AZ redundancy** — you, or AWS.
 Sources: AWS What's New (Nov 2025); VPC User Guide "Regional NAT gateways for
 automatic multi-AZ expansion"; AWS Networking blog "Introducing Amazon VPC
 Regional NAT Gateway".
+
+---
+
+# Confirmed lab: Challenge (Café) — Creating a VPC Networking Environment
+
+*(Module 7 Challenge lab, 56 marks, ~90 min. **This is the closest thing to the
+practical test** — scenario-driven, no step-by-step.)*
+
+## Build order (matches `notes/build-order.md`)
+| # | Do | Detail |
+|---|---|---|
+| 1 | **Public Subnet** | Lab VPC · `10.0.0.0/24` · AZ **a** |
+| 2 | **Internet gateway** | create **AND attach to Lab VPC** (two actions) |
+| 3 | **Route** | edit the VPC's existing (main) route table → `0.0.0.0/0` → IGW |
+| 4 | **Bastion Host** | Amazon Linux 2023 · t2.micro · vockey · Public Subnet · **public IP enabled** · SG `Bastion Host SG` = SSH 22 from **My IP** |
+| 5 | **Private Subnet** | `10.0.1.0/24` · **same AZ** as public |
+| 6 | **NAT gateway** | `Lab NAT Gateway` · **in the PUBLIC subnet** · Allocate Elastic IP |
+| 7 | **Private Route Table** | `0.0.0.0/0` → NAT · **ASSOCIATE with Private Subnet** ← most-missed |
+| 8 | **Key pair** | `vockey2` |
+| 9 | **Private Instance** | Private Subnet · vockey2 · **no public IP** · SG `Private Instance SG` = SSH 22 from **the Bastion Host SG** (a group, not a CIDR) |
+| 10 | **SSH passthrough** | agent forwarding; `ssh -A ec2-user@<bastion-ip>` then `ssh ec2-user@<private-ip>` |
+| 11 | **Test internet** | `ping 8.8.8.8` from the private instance — proves the NAT path |
+| 12 | **Custom NACL** | `Lab Network ACL` on Lab VPC · allow all in/out · **associate with Private Subnet** |
+| 13 | **Test Instance** | Public Subnet · SG `Test SG` = **All ICMP - IPv4** inbound |
+| 14 | **Deny rule** | outbound DENY All ICMP-IPv4 to `<test-private-ip>/32` with a **LOWER rule number** than the allow-all rule |
+
+## The three details that carry the marks
+1. **Route table ASSOCIATION** with the private subnet — creating the route is
+   not enough.
+2. **`Private Instance SG` source = the Bastion Host security group**, not a
+   CIDR. Chaining groups, exactly as in the three-tier pattern.
+3. **NACL rule ordering.** NACLs are evaluated **in ascending rule number,
+   first match wins**. If allow-all is rule 100, the deny must be numbered
+   *below* 100 (e.g. 50) or it is never reached.
+
+## Question answers
+1. **Internet gateway** — gives the public subnet bidirectional internet
+   access; it is what lets the bastion host be reached from the internet.
+2. **The NAT gateway** (in the public subnet) plus the private route table's
+   `0.0.0.0/0 → nat` route. Outbound only.
+3. **No.** The private instance has no public IP and its subnet has no route to
+   the IGW. It is reachable only through the bastion host.
+4. **Security / least privilege.** Separate keys mean compromising the bastion
+   does not grant access to the private instance, and SSH **agent forwarding**
+   lets you use the second key without ever copying it onto the bastion.
+5. **No.** `Private Instance SG` only allows **SSH 22** from the bastion SG.
+   ICMP is not permitted, and security groups are **allow-only**, so the ping
+   gets no reply.
+6. **None — no rule is needed.** Security groups are **stateful**: the outbound
+   ping automatically permits the return traffic. (A stateless **NACL** would
+   need an explicit rule — which is exactly why the NACL deny in task 44 works.)
