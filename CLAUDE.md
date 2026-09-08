@@ -45,6 +45,15 @@ that are actually graded.
 (Practice questions in Phase 2 should therefore be **console-based scenarios**,
 not code-writing tasks.)
 
+### Learner Lab budget — ALWAYS give a teardown list (agreed 2026-09-08)
+From 2026-09-08 the user practises in the **AWS Academy Learner Lab**, which has
+a **$50 total budget** and where resources **persist and keep billing between
+sessions**. So **every** practice task, worked example or build walkthrough must
+END with an explicit "how to delete what you just created" list, in reverse
+dependency order. See `notes/learner-lab-cleanup.md` for the cost table and the
+universal teardown order. The two expensive items to always call out are the
+**NAT gateway (~$1.10/day)** and the **ALB (~$0.55/day)**.
+
 ### Out-of-scope modules — still REQUIRED for coursework marks
 The practical test covers Modules 1-10 only, but **coursework marks require every
 guided lab in every module to be submitted, deadline 8 September 2026 midnight.**

@@ -51,3 +51,8 @@ The application must be able to:
   On-demand backup is a snapshot, not any-second, so it does not satisfy (d). |
 
 **Status:** issued 2026-09-08, awaiting the user's answer. Mark it when it comes in.
+
+## Teardown (Learner Lab — $50 budget)
+**DynamoDB → Tables → `CafeOrders` → Delete** (type `confirm`). The GSI and
+point-in-time recovery are deleted with the table; nothing separate to remove.
+Cost impact ≈ $0 — on-demand DynamoDB bills per request.
