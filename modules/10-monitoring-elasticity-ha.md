@@ -228,28 +228,31 @@ low: it makes the demo fire quickly.
 Watch it in **ASG → Activity** (scaling activity entries) and **Monitoring**.
 Scale-in afterwards is slow (~15 min of low CPU) — do not wait for it.
 
-## The six inspection questions — actual multiple-choice answers (seen 2026-09-08)
+## The six inspection questions — GRADED answers (submitted 2026-09-08)
 
-| Q | Question | Answer |
+| Q | Question | Correct answer |
 |---|---|---|
-| 1 | Which ports are open in CafeSG? | **Ports 80 and 443** |
-| 2 | Can you connect from the internet to instances in Public Subnet 1? | **Yes — if the instance has a public IP address, and the security group and network ACL allow it** |
-| 3 | *Should* an instance in Private Subnet 1 reach the internet? | **Yes** |
-| 4 | *Should* an instance in Private Subnet 2 reach the internet? | **Yes** |
-| 5 | Can you connect to CafeWebAppServer from the internet? | **Yes** |
-| 6 | Name of the AMI? | **Cafe WebServer Image** |
+| 1 | Which ports are open in CafeSG? | **VERIFY IN CONSOLE** — *not* "80 and 443" (marked wrong). Remaining options were "Port 80", "Ports 80, 443, and 3899", "Ports 22, 80, and 443". |
+| 2 | Can you connect from the internet to instances in Public Subnet 1? | **Yes — if the instance has a public IP address, and the security group and network ACL allow it** ✔ |
+| 3 | *Should* an instance in Private Subnet 1 reach the internet? | **Yes** ✔ |
+| 4 | *Should* an instance in Private Subnet 2 reach the internet? | **No** |
+| 5 | Can you connect to CafeWebAppServer from the internet? | **No** |
+| 6 | Name of the AMI? | **Cafe WebServer Image** ✔ |
 
-Notes on the distractors:
-- Q1: *"22, 80, and 443"* is the trap — there is **no SSH rule**, because this
-  environment uses **Session Manager** (hence `CafeRole` on the launch template).
-  "3899" is not a real service port.
-- Q2: both "No" options are self-refuting — a public subnet by definition has an
-  IGW route, and a **NAT gateway is irrelevant to inbound traffic**.
-- Q3/Q4: the verb is **"should"**, not "can" — it asks about *design intent*.
-  Private Subnet 2 currently **cannot**, and that is the defect Task 2 fixes;
-  the answer is still Yes.
-- Q5: **Yes** — CafeWebAppServer is in a **public** subnet with a public IP and
-  CafeSG allows 80/443. That single non-HA server is the premise of the lab.
+### THE LESSON (cost 3 marks)
+**These questions describe the environment's CURRENT STATE, not the design
+intent.** Despite the word *"should"*, Q3/Q4 are answered by reading the route
+tables: Private Subnet 1 **has** a route to the existing NAT gateway (Yes);
+Private Subnet 2 **has no NAT route** (No) — which is exactly the gap Task 2
+tells you to fix.
+
+**Q5 = No** is the one that reframes the whole lab: **CafeWebAppServer sits in a
+private subnet** and is already unreachable from the internet. That is *why* you
+build the ALB — the load balancer is what gives the private app server a public
+front door. Do not assume the "before" picture is a public single server.
+
+**Rule for next time: on an inspect-the-environment question, go and look. Never
+reason from what a good architecture ought to have.**
 
 ## The same six questions — how to derive each answer
 Do not memorise these; derive them, because the practical test will ask the same
@@ -262,15 +265,18 @@ Do not memorise these; derive them, because the practical test will ask the same
 2. **Can traffic from the internet reach Public Subnet 1?**
    **Yes.** Test = its route table contains `0.0.0.0/0 → igw-…`. That route, and
    only that route, is what makes a subnet public.
-3. **Should Private Subnet 1 and Private Subnet 2 be able to reach the internet?**
-   **Yes — outbound only**, for OS updates, patching and reaching AWS service
-   endpoints. That is a **NAT gateway** (outbound-initiated only), never an IGW.
-   Check both: Private Subnet 1's route table already points at the existing NAT
-   gateway; **Private Subnet 2's does not** — that gap is what Task 2 fixes.
+3. **Can Private Subnet 1 / Private Subnet 2 reach the internet?**
+   Answer each from its **route table**, not from what good design would want.
+   Private Subnet 1 already points at the existing NAT gateway → **Yes**.
+   Private Subnet 2 has **no NAT route** → **No**, and that gap is what Task 2
+   fixes. (Outbound internet for a private subnet is always a **NAT gateway**,
+   outbound-initiated only, never an IGW.)
 4. **Is CafeWebAppServer reachable from the internet?**
    Three things decide it, all of which must be true: (a) a public IPv4 address,
    (b) its subnet's route table has `0.0.0.0/0 → IGW`, (c) a security group rule
    allowing the port. Check all three and answer from evidence.
+   **In this lab the answer is NO** — it is in a private subnet. That is the
+   reason the ALB exists.
 5. **What is the name of the AMI?**
    EC2 → **AMIs** (owned by me) → **Cafe WebServer Image**. This is the AMI the
    launch template must use, from the **My AMIs** tab (not Quick Start).
