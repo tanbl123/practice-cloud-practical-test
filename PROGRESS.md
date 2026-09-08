@@ -22,6 +22,10 @@ double as practical-test practice.
 > missed step is **attaching the target group to the ASG after the ALB is built** —
 > the ASG is deliberately created with *no* load balancer.
 >
+> **PHASE 2 HAS STARTED** — the user asked for a practice question on
+> 2026-09-08. First task issued: `notes/practice/dynamodb-q1.md` (DynamoDB,
+> scenario format, awaiting their answer to mark).
+>
 > After that: revision sweep over Modules 3-7 using `notes/build-order.md` and
 > `notes/console-click-paths.md` for the practical test.
 > Still to get: confidence ratings (1-5) for Modules 7, 8, 9 and 10.
