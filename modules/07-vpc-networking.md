@@ -156,3 +156,29 @@ practical test** — scenario-driven, no step-by-step.)*
 6. **None — no rule is needed.** Security groups are **stateful**: the outbound
    ping automatically permits the return traffic. (A stateless **NACL** would
    need an explicit rule — which is exactly why the NACL deny in task 44 works.)
+
+---
+
+## Elastic IPs — who actually needs one (asked 2026-09-08)
+
+**Rule of thumb: an Elastic IP is for a thing that needs a *fixed, public* IPv4
+address of its own.** Most of an architecture does not.
+
+| Component | Public IP? | Elastic IP? | Why |
+|---|---|---|---|
+| **Public NAT gateway** | Yes | **REQUIRED** | It rewrites the source address of outbound packets to its own address, so replies can find their way back. No EIP = no NAT. |
+| Private NAT gateway | No | No | NAT between VPCs / on-prem, never to the internet. |
+| **Internet gateway** | — | **No** | Not an addressable device — it is a VPC attachment, horizontally scaled and managed by AWS. |
+| **ALB** | AWS-managed | **No** | You get a **DNS name**; the IPs behind it change. Always test/reference the DNS name. |
+| **NLB** | AWS-managed | **Optional — one per AZ** | The *only* ELB that can take an EIP. Exam trigger: *"the load balancer needs a static IP"* → **NLB**, not ALB. |
+| EC2 in a private subnet | No | No | Unreachable from the internet by design; outbound via NAT. |
+| EC2 in a public subnet | Auto-assigned | Only if the address must **survive a stop/start**, or an external firewall whitelists it | The auto-assigned public IP is released on stop and a different one is issued on start. |
+| RDS | No | No | Reached by its endpoint DNS name. |
+
+Other things to remember:
+- The NAT gateway create page has an **Allocate Elastic IP** button inline — you
+  do not pre-create one in EC2 → Elastic IPs first.
+- **Academy quota is typically 5 EIPs per Region.** "Address limit exceeded" in a
+  later lab = go to **EC2 → Elastic IPs** and release leftovers from earlier labs.
+- An **unassociated** EIP is the classic billing-waste exam answer. Since
+  Feb 2024 AWS charges for **all** public IPv4 addresses, in use or not.
