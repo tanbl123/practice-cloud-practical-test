@@ -182,3 +182,48 @@ Other things to remember:
   later lab = go to **EC2 → Elastic IPs** and release leftovers from earlier labs.
 - An **unassociated** EIP is the classic billing-waste exam answer. Since
   Feb 2024 AWS charges for **all** public IPv4 addresses, in use or not.
+
+### The three-question test: do I need an Elastic IP here?
+
+**Q1 — Does this resource talk to the internet at all?**
+If it only ever talks to other resources inside the VPC (RDS, an app server
+behind an ALB, an EFS mount target), it has no public IP and an EIP is
+meaningless. Stop.
+
+**Q2 — Can this resource type even take an EIP?**
+An EIP attaches to an **ENI you control**. Public NAT gateway (mandatory),
+EC2 instance/ENI, and **NLB** (optional, one per AZ) can. **ALB, IGW, RDS, S3,
+DynamoDB, Lambda, API Gateway cannot** — the console offers no option, because
+AWS owns those endpoints and gives you a **DNS name** instead.
+
+**Q3 — Does the address have to stay the same?**
+An auto-assigned public IP is **released on stop** and a different one is issued
+on start, and it changes if the instance is replaced.
+- Fixed address needed (partner firewall whitelist, a DNS A record, a NAT
+  gateway) → **Elastic IP**.
+- Throwaway public access for one lab → **auto-assign is fine**.
+- Public *and* highly available → **neither: put an ALB in front and hand out
+  its DNS name.**
+
+### TRAP: an Elastic IP does not make anything public
+You **can** attach an EIP to an instance in a private subnet — the console
+allows it — and it will not work. "Public" is decided by the **route table**
+(`0.0.0.0/0 → IGW`), not by the address.
+
+*"I assigned an Elastic IP but still cannot reach the instance"* → check in
+this order:
+1. Route table has `0.0.0.0/0 → igw-…`  (**timeout**)
+2. Security group inbound rule for the port  (**timeout**)
+3. NACL — stateless, so it also needs outbound ephemeral 1024-65535  (**timeout**)
+4. Is the application actually listening?  (**connection refused**, not timeout)
+
+Remember: **timeout = routing/security group; refused = the app.**
+
+### Scenario trigger words
+| Wording | Answer |
+|---|---|
+| "static IP" / "must not change" / "whitelisted by the partner's firewall" | **Elastic IP** |
+| "static IP **for the load balancer**" | **NLB** (an ALB cannot take one) |
+| "private instances need to download patches/updates" | **NAT gateway** (which needs an EIP) |
+| "highly available public website" | **ALB + its DNS name**, no EIP |
+| "reduce cost — we found unused addresses" | Release **unassociated Elastic IPs** |
