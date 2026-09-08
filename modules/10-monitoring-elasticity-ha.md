@@ -325,3 +325,47 @@ Do not memorise these; derive them, because the practical test will ask the same
 6. Target group: **2 healthy targets**.
 7. `http://<ALB-DNS>/cafe` renders the café page in a browser.
 8. ASG Activity tab shows at least one scale-out entry from the stress test.
+
+---
+
+## "How do I actually get two AZs?" (asked 2026-09-08)
+
+You do **not** create AZs — they exist in every Region. You create **subnets**,
+and **a subnet lives in exactly one AZ**, chosen from a dropdown at creation
+time. That is the entire mechanism.
+
+**Region → AZs → a subnet in one AZ → resources in that subnet.**
+
+### The standard four-subnet HA layout
+**VPC → Subnets → Create subnet** (use **Add new subnet** to do all four in one
+pass). The **Availability Zone dropdown is the whole decision**; CIDRs must not
+overlap.
+
+| Subnet | AZ | CIDR |
+|---|---|---|
+| Public Subnet 1 | us-east-1**a** | 10.0.0.0/24 |
+| Public Subnet 2 | us-east-1**b** | 10.0.1.0/24 |
+| Private Subnet 1 | us-east-1**a** | 10.0.2.0/24 |
+| Private Subnet 2 | us-east-1**b** | 10.0.3.0/24 |
+
+### Each service spans AZs by being GIVEN those subnets
+| Service | How |
+|---|---|
+| **ALB** | Network mapping → tick **2+ AZs**, one subnet each. **Mandatory** — one AZ is refused. |
+| **Auto Scaling group** | Select both private subnets; it balances instances across them. |
+| **RDS Multi-AZ** | **DB subnet group** with subnets in **≥2 AZs**, then tick Multi-AZ. |
+| **EFS** | A **mount target in each AZ**. |
+| **NAT gateway** | **One per AZ** — AZ-scoped, does **not** fail over. (Module 10 challenge Task 2.) |
+
+### NOT multi-AZ — traps
+- **EBS volume**: one AZ, attaches only to an instance in that same AZ.
+- **A single EC2 instance**: one AZ. Redundancy comes from the ASG, not the instance.
+- **NAT gateway**: one AZ.
+
+### AZ letter vs AZ ID
+`us-east-1a (use1-az2)`: the **letter is per-account** — one account's `us-east-1a`
+may be a different physical zone from another's. The **AZ ID** (`use1-az2`) is the
+same physical zone for everyone. Never needs acting on; just know what it is.
+
+**RULE: if a requirement says "highly available" or "fault tolerant", the first
+thing you build is subnets in two different AZs — everything else references them.**
