@@ -47,3 +47,24 @@ else is submitted.** A whole Challenge lab is 56 points for similar effort.
   Storage Gateway). An unsubmitted lab scores zero.
 - Submit early and often within each lab — the grader is a free checklist.
 - Do not perfect anything. Bank marks, move on.
+
+---
+
+## STATUS at end of 8 Sept 2026
+
+**Completed tonight:** Module 14 Cognito-era serverless challenge, Module 11
+CloudFormation challenge, Module 13 SQS guided lab, Module 16 Storage Gateway
+(partial, SCP-blocked). 26 graded items in Canvas.
+
+**BLOCKED — AWS Academy platform outage.** From late on 8 Sept the Vocareum lab
+panel spins indefinitely and no Start Lab button appears. Reproduced on:
+- Challenge (Café): Creating a VPC Networking Environment (Mod 7)
+- Challenge (Café): Creating a Scalable and Highly Available Environment (Mod 10)
+
+Ruled out locally: hard refresh, new tab, different browser, **incognito**,
+ending other lab sessions. Platform-side. Educator emailed before the deadline
+requesting an extension, with screenshot evidence.
+
+**If access returns, do the Module 7 VPC challenge FIRST** — it is the only
+remaining lab that is both coursework marks and practical-test rehearsal.
+Run sheet is in `modules/07-vpc-networking.md`.
