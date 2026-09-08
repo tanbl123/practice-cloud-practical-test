@@ -49,3 +49,11 @@ Do this in **every Region you touched** — the console only shows one at a time
 | Task | Resources created | Teardown |
 |---|---|---|
 | `practice/dynamodb-q1.md` | DynamoDB table `CafeOrders` (+ GSI, PITR) | Delete the table; the GSI and PITR go with it. Cost ≈ $0. |
+
+## Learner Lab service restrictions (found 2026-09-08)
+- **IAM is blocked.** Creating a **user group** fails with an IAM policy denial;
+  creating users and access keys is likewise not permitted. **Do not plan IAM
+  build drills in the Learner Lab** — cover Module 3 conceptually instead. The
+  practical-test environment is a different lab and will permit what its tasks ask for.
+- Region: the Learner Lab is normally restricted to **us-east-1** (and sometimes
+  us-west-2). Check before blaming a build.

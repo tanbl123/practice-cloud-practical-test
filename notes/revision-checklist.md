@@ -76,3 +76,15 @@ Delete the **NAT gateway** the moment each VPC drill ends (~$1.10/day — the on
 thing here that can dent the $50). End of night, all of these must read **0**:
 EC2 running instances, Volumes, Elastic IPs, Load Balancers, VPC NAT Gateways.
 Check in **every Region you touched**.
+
+---
+## Learner Lab reality check (2026-09-08)
+- **Drill 6 (IAM) CANNOT be done in the Learner Lab** — creating a user group is
+  blocked by the lab's IAM policy. Module 3 is theory-only here:
+  groups for people · roles for services (never access keys) · explicit Deny
+  always wins · implicit deny is the default · **SCP > IAM**.
+  Evaluation order: **SCP deny → explicit deny → explicit allow → implicit deny.**
+- Everything else in Tier 1 and Tier 2 was completed successfully:
+  VPC from scratch, EC2 + security groups, ALB + Auto Scaling (incl. stress test),
+  DynamoDB, S3 (versioning, BPA, bucket policy, static website hosting),
+  EFS (mounted across two AZs), EBS (+ snapshot → cross-AZ volume), KMS.
