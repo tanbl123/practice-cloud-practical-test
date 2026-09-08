@@ -158,3 +158,141 @@ added and removed, because it names a group rather than addresses.
 3. Why 90 seconds of grace period?
 4. ELB vs EC2 health check — which and why?
 5. The ALB and ASG span two AZs. What is still a single point of failure?
+
+---
+
+# Challenge (Café) lab: Creating a Scalable and Highly Available Environment for the Café
+
+*(Module 10 challenge lab, ~90 min, 56 marks. **Unguided** — this is the closest
+rehearsal you will get to the practical test. Do it without the run sheet open if
+you can; use this file only when stuck.)*
+
+## What is different from the guided "Highly Available Environment" lab
+| | Guided lab | This challenge lab |
+|---|---|---|
+| ASG sizing | 2 / 2 / 2 | **desired 2 / min 2 / max 6** |
+| Scaling policy | none | **target tracking, Average CPU = 25, warmup 60 s** |
+| Order | ALB first, then ASG attaches to it | **ASG first with NO load balancer**, ALB after, then **attach the target group to the ASG** |
+| NAT | already built | **you build the second NAT gateway yourself** |
+| Test URL | `<ALB-DNS>` | **`<ALB-DNS>/cafe`** |
+
+Those five differences are where the marks are. If you build it from muscle
+memory of the guided lab you will lose points on every one of them.
+
+## Build order (dependency order — do not reshuffle)
+
+| # | Step | Checkpoint before moving on |
+|---|---|---|
+| 1 | **Inspect** VPC, subnets, route tables, CafeSG, CafeWebAppServer, AMIs | You can answer the six questions from what you saw, not from memory |
+| 2 | **NAT gateway** in the **Public Subnet of the SECOND AZ**, Connectivity = Public, **Allocate Elastic IP** | State = Available (takes ~1–2 min) |
+| 3 | **Route table for Private Subnet 2** → add `0.0.0.0/0` → **that new NAT gateway** | Route table shows 2 routes: `local` + `0.0.0.0/0 → nat-…`, **and the Subnet associations tab lists Private Subnet 2** |
+| 4 | **Launch template** — AMI **Cafe WebServer Image** (My AMIs), t2.micro, **new key pair**, security group **CafeSG**, Resource tag `Name = webserver` applied to **Instances**, Advanced details → IAM instance profile **CafeRole** | Template version 1 created; re-open it and confirm the IAM profile and the tag actually saved |
+| 5 | **Auto Scaling group** — that launch template, **Private Subnet 1 + Private Subnet 2**, **No load balancer**, desired 2 / min 2 / **max 6**, **target tracking: Average CPU utilization, target 25, instance warmup 60 s** | 2 instances launch and reach `InService` |
+| 6 | **Application Load Balancer** — internet-facing, **both PUBLIC subnets**, **new security group** allowing **HTTP 80 from Anywhere-IPv4**, **new target group** (Instances, HTTP:80) | ALB state = Active; DNS name copied down |
+| 7 | **Attach the target group to the ASG** — ASG → **Integrations / Load balancing → Edit → Application Load Balancer target groups → pick the new target group** | Target group → Targets tab shows the 2 ASG instances as **healthy** |
+| 8 | **Test** `http://<ALB-DNS-name>/cafe` | Café menu page loads |
+| 9 | **Stress test** via Session Manager on one instance | New instances appear in the ASG Activity tab |
+
+## Step 7 is the single most-missed step
+You created the ASG **before** the ALB existed, so the ASG has no idea the target
+group exists. Creating a target group does **not** register anything. You must go
+back into the ASG and attach it. If you skip this, the ALB has zero targets and
+`<ALB-DNS>/cafe` returns **503 Service Unavailable** — and every "scaling works"
+mark fails with it.
+
+Symptom → cause map for this lab:
+- **503** = target group empty (step 7 skipped) or all targets unhealthy.
+- **504 / timeout** = routing or security group — the ALB cannot reach port 80 on
+  the instance.
+- **404 on `/`, works on `/cafe`** = normal. The café app is served from `/cafe`.
+  If the **health check** is failing for the same reason, set the target group's
+  health check path to **`/cafe`**.
+
+## The stress test (Task: verify scaling)
+Connect to one ASG instance with **Session Manager** (EC2 → Connect → Session
+Manager — there is no SSH into a private subnet, and that is the point of
+`CafeRole` on the launch template: SSM needs the instance profile).
+
+```bash
+sudo amazon-linux-extras install epel -y
+sudo yum install stress -y
+stress --cpu 1 --timeout 600
+```
+
+Why this triggers a scale-out: t2.micro has **1 vCPU**, so `--cpu 1` pins that
+instance to ~100%. The ASG metric is the **average across the group**, so with
+two instances the average is ~50%, which is above the **25** target — the policy
+adds instances until the average falls back to 25. That is why the target is set
+low: it makes the demo fire quickly.
+
+Watch it in **ASG → Activity** (scaling activity entries) and **Monitoring**.
+Scale-in afterwards is slow (~15 min of low CPU) — do not wait for it.
+
+## The six inspection questions — how to derive each answer
+Do not memorise these; derive them, because the practical test will ask the same
+*shape* of question about a different environment.
+
+1. **Which ports are open on CafeSG?**
+   EC2 → Security Groups → CafeSG → **Inbound rules** tab. Read them off; expect
+   **HTTP 80** and **HTTPS 443** from `0.0.0.0/0`. Note what is *absent*: no SSH,
+   because access is via Session Manager.
+2. **Can traffic from the internet reach Public Subnet 1?**
+   **Yes.** Test = its route table contains `0.0.0.0/0 → igw-…`. That route, and
+   only that route, is what makes a subnet public.
+3. **Should Private Subnet 1 and Private Subnet 2 be able to reach the internet?**
+   **Yes — outbound only**, for OS updates, patching and reaching AWS service
+   endpoints. That is a **NAT gateway** (outbound-initiated only), never an IGW.
+   Check both: Private Subnet 1's route table already points at the existing NAT
+   gateway; **Private Subnet 2's does not** — that gap is what Task 2 fixes.
+4. **Is CafeWebAppServer reachable from the internet?**
+   Three things decide it, all of which must be true: (a) a public IPv4 address,
+   (b) its subnet's route table has `0.0.0.0/0 → IGW`, (c) a security group rule
+   allowing the port. Check all three and answer from evidence.
+5. **What is the name of the AMI?**
+   EC2 → **AMIs** (owned by me) → **Cafe WebServer Image**. This is the AMI the
+   launch template must use, from the **My AMIs** tab (not Quick Start).
+6. **What is still not highly available / what is the single point of failure?**
+   Before your changes: **one NAT gateway in one AZ**. If that AZ fails, Private
+   Subnet 2's instances lose all outbound internet. Fix = **one NAT gateway per
+   AZ, with a separate route table per private subnet** pointing at the NAT in
+   its own AZ. This is the same answer as the guided lab's optional task and it
+   recurs constantly in exams.
+
+## Traps specific to this lab
+- **NAT gateway must go in a PUBLIC subnet** — a NAT gateway in a private subnet
+  is a dead end. It is placed in the public subnet of AZ 2 but it serves the
+  **private** subnet of AZ 2.
+- **NAT gateway is AZ-scoped.** Private Subnet 2 must use the NAT gateway in
+  *its own* AZ, otherwise you pay cross-AZ charges and reintroduce the SPOF.
+- **Connectivity type = Public** on the NAT gateway, and **Allocate Elastic IP** —
+  a private NAT gateway has no internet path.
+- **Do not edit the existing private route table.** Private Subnet 1 and Private
+  Subnet 2 need *separate* route tables; if they share one, adding your route
+  breaks AZ 1. Check the **Subnet associations** tab before editing anything.
+- **IAM instance profile `CafeRole` lives under Advanced details** in the launch
+  template, near the bottom. Miss it and Session Manager will not connect, which
+  costs you the whole stress-test task.
+- **The resource tag must be applied to Instances** (tick the Instances checkbox),
+  not just created.
+- **"No load balancer" is deliberate** at ASG creation time. Choosing "Attach to
+  an existing load balancer" here is impossible (none exists yet) — resist the
+  urge to build the ALB first, because the lab is testing whether you know how to
+  attach one afterwards.
+- **ALB needs both public subnets**, one per AZ. One subnet = not HA and the
+  console will refuse.
+- **Max 6, not 2.** The guided lab's 2/2/2 is a different lab.
+- **Warmup 60 s** is on the scaling policy, not the ASG health check grace period
+  — they are different fields. Instance warmup tells the policy to ignore a new
+  instance's CPU while it boots, so the policy does not over-scale.
+
+## Verification pass before you submit (2 minutes, always worth it)
+1. NAT gateway: State **Available**, in the **public** subnet of AZ 2, has an EIP.
+2. Private Subnet 2's route table: `0.0.0.0/0 → nat-…` **and** Private Subnet 2
+   in Subnet associations.
+3. Launch template: AMI = Cafe WebServer Image, t2.micro, CafeSG, IAM profile
+   CafeRole, tag Name=webserver on Instances.
+4. ASG: both private subnets, 2/2/6, target tracking CPU 25 / warmup 60.
+5. ALB: internet-facing, both public subnets, its SG allows HTTP from anywhere.
+6. Target group: **2 healthy targets**.
+7. `http://<ALB-DNS>/cafe` renders the café page in a browser.
+8. ASG Activity tab shows at least one scale-out entry from the stress test.
