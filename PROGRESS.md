@@ -26,8 +26,9 @@ double as practical-test practice.
 > 2026-09-08. First task issued: `notes/practice/dynamodb-q1.md` (DynamoDB,
 > scenario format, awaiting their answer to mark).
 >
-> After that: revision sweep over Modules 3-7 using `notes/build-order.md` and
-> `notes/console-click-paths.md` for the practical test.
+> **Revision plan for the test: `notes/revision-checklist.md`** — tiered build
+> drills in the Learner Lab (Tier 1 ~2 hrs: VPC, EC2+SG, ALB+ASG, DynamoDB, S3,
+> IAM), with per-drill teardown to protect the $50 budget.
 > Still to get: confidence ratings (1-5) for Modules 7, 8, 9 and 10.
 
 ---
