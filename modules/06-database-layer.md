@@ -115,3 +115,10 @@ tables; choose **DynamoDB** for high-volume key-based lookups.
 "Create a DynamoDB table named X with partition key Y (and sort key Z), using
 on-demand capacity, then add N items." Read the brief for whether a **sort key**
 and which **capacity mode** are specified — those are the marked details.
+
+---
+
+**First-time console walkthrough:** see `notes/dynamodb-console-walkthrough.md`
+(written 2026-09-08) — every screen, the on-demand vs provisioned decision, the
+"you cannot query a non-key attribute" constraint, GSI vs LSI, projections, PITR
+vs on-demand backup, TTL and Streams.
