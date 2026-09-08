@@ -34,6 +34,17 @@ between sessions, so this repo is the only memory of what we have already done.
    The user will explicitly ask for questions, answer them, and Claude marks
    them. Only start this when the user asks.
 
+### Coding is NOT tested (confirmed by lecturer, 2026-09-08)
+The practical test is **console build tasks only**. The lecturer confirmed there
+is **no coding component**. So whenever a task involves code — AWS CLI commands,
+CloudFormation YAML, Lambda handler code, SQL, JSON policy documents — **just
+give the user the complete, correct code**. Do not make them write it, and do
+not turn it into a practice exercise. Spend their time on the console skills
+that are actually graded.
+
+(Practice questions in Phase 2 should therefore be **console-based scenarios**,
+not code-writing tasks.)
+
 ### Out-of-scope modules — still REQUIRED for coursework marks
 The practical test covers Modules 1-10 only, but **coursework marks require every
 guided lab in every module to be submitted, deadline 8 September 2026 midnight.**
