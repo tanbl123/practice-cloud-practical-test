@@ -122,3 +122,52 @@ and which **capacity mode** are specified — those are the marked details.
 (written 2026-09-08) — every screen, the on-demand vs provisioned decision, the
 "you cannot query a non-key attribute" constraint, GSI vs LSI, projections, PITR
 vs on-demand backup, TTL and Streams.
+
+---
+
+## "Database migration" in Module 6 — what it actually means (2026-09-09)
+It is the **café lab: move MySQL off the EC2 instance into Amazon RDS**. It is
+**not AWS DMS** — DMS is not an ACAv3 module topic and is very unlikely in the test.
+
+### The shape of the task
+1. **DB subnet group** — subnets in **at least 2 AZs** (mandatory even for a
+   single-AZ database).
+2. **Create the RDS instance** — **private** subnets, **Publicly accessible = No**,
+   security group allowing **3306 from the app server's security group** (never a CIDR).
+3. **Export and import** (code is handed over; not graded):
+```bash
+mysqldump --user=root --password='<pw>' --databases cafe_db > cafedb-backup.sql
+mysql --user=admin --password='<pw>' --host=<endpoint>.us-east-1.rds.amazonaws.com < cafedb-backup.sql
+mysql --user=admin --password='<pw>' --host=<endpoint>.us-east-1.rds.amazonaws.com \
+      --execute="SHOW DATABASES; USE cafe_db; SELECT * FROM product;"
+```
+4. **Repoint the app at the RDS ENDPOINT DNS NAME** — never an IP address;
+   failover changes the underlying host.
+
+**All the marks are console-side:** subnet group across 2 AZs · private subnets ·
+Publicly accessible = No · SG source = the app tier's SG · app uses the endpoint name.
+
+---
+
+## Moving things between AZs and Regions — the three mechanisms (do not conflate)
+| Goal | Mechanism |
+|---|---|
+| EBS volume → **another AZ**, same Region | **Snapshot → create volume from snapshot, choosing the AZ.** No copy step: snapshots are already **Region-wide**. |
+| EBS volume → **another Region** | **Snapshot → Copy snapshot** to that Region → create volume there |
+| A whole server → **another Region** | **Create AMI → Copy AMI** → launch from it there (copying the AMI copies its snapshots automatically) |
+| S3 objects → another bucket/Region | **S3 Replication (CRR/SRR)** — unrelated to EBS/AMI |
+
+- Copying an **encrypted** snapshot cross-Region needs a **KMS key in the
+  destination Region** — KMS keys do not cross Regions.
+- A copied AMI gets a **new AMI ID** in the destination Region. Anything
+  referencing the old ID (launch template, CloudFormation mapping) must be updated
+  — that is why templates carry a `RegionMap`.
+
+**S3 Replication requirements (commonly graded):** versioning on **BOTH** buckets ·
+an **IAM role** · **only objects created AFTER the rule** replicate (existing ones
+need **Batch Replication**) · replication is **asynchronous**.
+
+**Scope note:** AMIs/snapshots are **Module 5 (in scope)**. Cross-Region copy as a
+*DR strategy* (RTO/RPO, pilot light, warm standby) is **Module 16 — OUT of scope**.
+Know the mechanism in one sentence; do not drill it.
+EOF
