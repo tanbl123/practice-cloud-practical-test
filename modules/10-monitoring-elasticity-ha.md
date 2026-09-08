@@ -409,3 +409,23 @@ Raise either to tolerate a blip.
 | "ASG should use the load balancer's view of health" | **Health check type = ELB** |
 | "a brief blip should not cause a replacement" | **Raise unhealthy threshold / interval** on the target group |
 | "group adds too many instances at once" | **Increase instance warmup / cooldown** |
+
+---
+
+## ALB error codes — what each one tells you (drilled 2026-09-08)
+| Code | Meaning | Where to look |
+|---|---|---|
+| **503** | No registered or healthy targets **at all** | Target group not attached to the ASG; or every target unhealthy |
+| **502** | Target reached, **no valid HTTP response** | App not listening — user data failed, httpd not installed/started |
+| **504** | Target reached, **timed out** | Security group blocking, or app hung |
+| **404 on `/`, works on `/app-path`** | App serves from a sub-path | Set the target group **health check path** to that sub-path |
+
+**"2/2 checks passed" + target Unhealthy** = the *machine* is fine, the *app* is
+not. EC2 status checks never test your application.
+
+## Launch template versioning — the trap
+**"Modify template (Create new version)" opens a BLANK form unless you set
+"Source template version" at the top.** Save without it and the new version has
+no user data, no security group, no IAM profile — yet instances still launch and
+pass EC2 status checks, so the only symptom is unhealthy targets and a 502.
+Always set the source version first.

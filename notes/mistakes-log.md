@@ -57,3 +57,26 @@ from the sender**. If the app listened on 8080, that row would say 8080 and
 2. Who is allowed to talk to it? → the **source**.
 
 Has now come up twice. Re-drill before any security-group task.
+
+## 2026-09-08 — Launch template v2 created blank (user data lost)
+**Symptom:** both target group targets `Unhealthy — Health checks failed`, while
+the instances themselves showed `2/2 checks passed`. ALB returned **502**.
+
+**Cause:** a new launch template version was created to fix a tag, but
+**"Source template version" was not set**, so the form started **blank** — the
+new version had **no user data and no security group**. Instances launched fine
+and passed EC2 status checks; nothing was listening on port 80.
+
+**Fix:** Modify template (Create new version) → **set Source template version = 1**
+→ re-add the tag → save → ASG → Edit → Version = Latest → **terminate the
+instances** so replacements use it.
+
+**RULE: when creating a new launch template version, ALWAYS set "Source template
+version" first.** Otherwise you silently lose every field.
+
+**Diagnostic pattern (same as the Lambda "undeployed code" one):** instance
+status checks passing tells you the *machine* is healthy, not that the *app* is.
+- **2/2 checks passed + target unhealthy** → the machine is fine, the app is not.
+- ALB **502** = target reached, no valid HTTP response (app not listening).
+- ALB **503** = no registered/healthy targets at all.
+- ALB **504** = target reached but timed out.
